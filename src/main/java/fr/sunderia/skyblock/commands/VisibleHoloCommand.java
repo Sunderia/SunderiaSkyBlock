@@ -12,14 +12,9 @@ import java.util.Locale;
 @CommandInfo(name = "visibleholo", aliases = {"vh"})
 public class VisibleHoloCommand extends CommandPlugin {
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String aliasUsed, @NotNull String[] args) {
-        if(!(sender instanceof Player player)){
-
-            return false;
-        }
-        if(args[0] == null || !args[0].toLowerCase(Locale.ROOT).equals("true") && !args[0].toLowerCase(Locale.ROOT).equals("false")){
-            player.sendMessage();
-            return false;
+    public void execute(Player player, String[] args) {
+        if(args.length != 1 || !args[0].equalsIgnoreCase("true") && !args[0].equalsIgnoreCase("false")) {
+            player.sendMessage("/visibleholo <true/false>");
         }
         SunderiaSkyblock.instance.getConfig().set("visibleholo." + player.getUniqueId(), args[0].toLowerCase(Locale.ROOT));
         SunderiaSkyblock.instance.saveConfig();
