@@ -12,5 +12,6 @@ public @interface CommandInfo{
     String name();
     boolean needsPlayer() default true;
     String[] aliases();
+    String permission() default "";
 
 }
