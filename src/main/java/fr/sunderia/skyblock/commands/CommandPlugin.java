@@ -20,21 +20,21 @@ public class CommandPlugin implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String aliasUsed, @NotNull String[] strings) {
-        if(commandInfo.needsPlayer() && !(sender instanceof Player)){
-        sender.sendMessage(SunderiaSkyblock.header + "Only players can use this command.");
-            return false;
-        }
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String aliasUsed, @NotNull String[] args) {
         if(!commandInfo.permission().isEmpty() && !sender.hasPermission(commandInfo.permission())) {
             sender.sendMessage(SunderiaSkyblock.header + ChatColor.RED + "You do not have the permission to execute this command !");
-            return false;
+            return true;
         }
-
-        if (sender instanceof Player) {
-            execute((Player) sender, strings);
-        } else {
-            execute(sender, strings);
+        
+        if(info.needsPlayer()) {
+            if(!(sender instanceof Player player)) {
+                sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
+            } else {
+                onCommand(player, args);
+            }
+            return true;
         }
+        onCommand(sender, args);
         return true;
     }
 
