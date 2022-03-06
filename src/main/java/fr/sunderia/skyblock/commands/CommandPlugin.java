@@ -30,11 +30,11 @@ public class CommandPlugin implements CommandExecutor {
             if(!(sender instanceof Player player)) {
                 sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
             } else {
-                onCommand(player, args);
+                execute(player, args);
             }
             return true;
         }
-        onCommand(sender, args);
+        execute(sender, args);
         return true;
     }
 
