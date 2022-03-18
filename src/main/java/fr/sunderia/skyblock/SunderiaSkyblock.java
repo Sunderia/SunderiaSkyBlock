@@ -16,11 +16,12 @@ import java.util.stream.Collectors;
 
 public class SunderiaSkyblock extends JavaPlugin {
 
-    public static SunderiaSkyblock instance;
+    private static SunderiaSkyblock instance;
     public static final String header = ChatColor.DARK_GREEN + "[" + ChatColor.GREEN + "SunderiaSkyblock" + ChatColor.DARK_GREEN + "] ";
 
     @Override
     public void onEnable() {
+        instance = this;
         this.saveDefaultConfig();
         registerListeners(new Reflections().getSubTypesOf(Listener.class).stream().map(clazz -> (Class<? extends Listener>) clazz).collect(Collectors.toSet()));
         registerCommands(new Reflections().getTypesAnnotatedWith(CommandInfo.class).stream().map(clazz -> (Class<? extends CommandExecutor>) clazz).collect(Collectors.toSet()));
@@ -51,6 +52,10 @@ public class SunderiaSkyblock extends JavaPlugin {
                 exception.printStackTrace();
             }
         });
+    }
+
+    public static SunderiaSkyblock getInstance(){
+        return instance;
     }
 
 }

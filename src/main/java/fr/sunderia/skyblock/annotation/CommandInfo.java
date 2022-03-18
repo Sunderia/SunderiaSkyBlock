@@ -1,5 +1,7 @@
 package fr.sunderia.skyblock.annotation;
 
+import fr.sunderia.skyblock.commands.CommandPlugin;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -13,5 +15,6 @@ public @interface CommandInfo{
     boolean needsPlayer() default true;
     String[] aliases();
     String permission() default "";
+    String arguments() default "";
 
 }
