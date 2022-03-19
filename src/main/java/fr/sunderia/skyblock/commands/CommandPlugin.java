@@ -18,46 +18,46 @@ public class CommandPlugin implements CommandExecutor {
 
     protected CommandPlugin() {
         this.commandInfo = getClass().getDeclaredAnnotation(CommandInfo.class);
-        if(commandInfo == null) throw new IllegalArgumentException("Commands classes must have ClassInfo annotation.");
+        if (commandInfo == null) throw new IllegalArgumentException("Commands classes must have ClassInfo annotation.");
+    }
+
+    public static String arrayToString(String[] array) {
+        return Arrays.toString(array).replace("[", "").replace(",", "").replace("]", "");
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String aliasUsed, @NotNull String[] arguments) {
-        if(commandInfo.needsPlayer() && !(sender instanceof Player)){
+        if (commandInfo.needsPlayer() && !(sender instanceof Player)) {
             sender.sendMessage(SunderiaSkyblock.header + ChatColor.RED + "Only players can use this command.");
             return true;
         }
-        if(!commandInfo.permission().isEmpty() && !sender.hasPermission(commandInfo.permission())) {
+        if (!commandInfo.permission().isEmpty() && !sender.hasPermission(commandInfo.permission())) {
             sender.sendMessage(SunderiaSkyblock.header + ChatColor.RED + "You do not have the permission to execute this command !");
             return true;
         }
-        if(!getCommandInfo().arguments().isEmpty()) {
-            if(arguments[0] == null){
+        if (!getCommandInfo().arguments().isEmpty()) {
+            if (arguments[0] == null) {
                 sender.sendMessage(SunderiaSkyblock.header + ChatColor.RED + "Use these arguments: " + Bukkit.getPluginCommand(getCommandInfo().name()).getUsage());
                 return true;
             }
-            System.out.println("arguments command " + Arrays.toString(arguments).replace(",", "").replace("[", "").replace("]", ""));
-            System.out.println("args split space " + Arrays.toString(commandInfo.arguments().split("\\s+")).replace(",", "").replace("[", "").replace("]", ""));
             for (int index1 = 0; index1 < commandInfo.arguments().split("\\s+").length; index1++) {
-                System.out.println("args split space index1 " + commandInfo.arguments().split("\\s+")[index1].replace(",", "").replace("[", "").replace("]", ""));
-                for (int index2 = 0; index2 < commandInfo.arguments().split("\\s+")[index1].replace(",", "").replace("[", "").replace("]", "").split("/").length; index2++) {
-                    System.out.println("args split space index1 split / " + Arrays.toString(commandInfo.arguments().split("\\s+")[index1].replace(",", "").replace("[", "").replace("]", "").split("/")).replace(",", "").replace("[", "").replace("]", ""));
-                    System.out.println("args split space index1 split / index2 " + commandInfo.arguments().split("\\s+")[index1].replace(",", "").replace("[", "").replace("]", "").split("/")[index2].replace(",", "").replace("[", "").replace("]", ""));
-                    System.out.println("argument index1 " + arguments[index1].replace(",", "").replace("[", "").replace("]", ""));
-                    if (!(arguments[index1].replace(",", "").replace("[", "").replace("]", "").equals(commandInfo.arguments().split("\\s+")[index1].replace(",", "").replace("[", "").replace("]", "").split("/")[index2].replace(",", "").replace("[", "").replace("]", "")))) {
-                         sender.sendMessage(SunderiaSkyblock.header + ChatColor.RED + "Use these arguments: " + Bukkit.getPluginCommand(getCommandInfo().name()).getUsage());
-                         return true;
-                    }
+                int finalIndex = index1;
+                if(Arrays.stream(commandInfo.arguments().split("\\s+")[index1].split("/")).noneMatch(arg -> arg.equalsIgnoreCase(arguments[finalIndex]))){
+                    sender.sendMessage(SunderiaSkyblock.header + ChatColor.RED + "Use these arguments: " + Bukkit.getPluginCommand(getCommandInfo().name()).getUsage());
+                    return true;
                 }
             }
         }
-        if(sender instanceof Player) execute((Player) sender, arguments);
+        if (sender instanceof Player) execute((Player) sender, arguments);
         else execute(sender, arguments);
         return true;
     }
 
-    public void execute(CommandSender sender, String[] args) {}
-    public void execute(Player player, String[] args) {}
+    public void execute(CommandSender sender, String[] args) {
+    }
+
+    public void execute(Player player, String[] args) {
+    }
 
     public CommandInfo getCommandInfo() {
         return commandInfo;
