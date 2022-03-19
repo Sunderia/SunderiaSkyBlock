@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.Consumer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,17 +52,12 @@ public class ItemBuilder implements Listener {
 
     public ItemBuilder setGlow(boolean glow) {
         if(glow) {
-            if(ItemStackUtils.isAnArmor(stack)) {
-                addEnchant(Enchantment.KNOCKBACK, 1);
-            } else {
-                addEnchant(Enchantment.PROTECTION_EXPLOSIONS, 1);
-            }
+            if(ItemStackUtils.isAnArmor(stack)) addEnchant(Enchantment.KNOCKBACK, 1);
+            else addEnchant(Enchantment.PROTECTION_EXPLOSIONS, 1);
             addItemFlag(ItemFlag.HIDE_ENCHANTS);
         } else {
             ItemMeta meta = getItemMeta();
-            for(Enchantment enchantment : meta.getEnchants().keySet()) {
-                meta.removeEnchant(enchantment);
-            }
+            meta.getEnchants().keySet().forEach(meta::removeEnchant);
         }
         return this;
     }
@@ -100,8 +96,7 @@ public class ItemBuilder implements Listener {
     }
 
     public ItemBuilder setHead(OfflinePlayer player) {
-        if(!(stack.getItemMeta() instanceof SkullMeta meta)) return this;
-        if(!meta.hasOwner()) return this;
+        if(!(stack.getItemMeta() instanceof SkullMeta meta) || !meta.hasOwner()) return this;
         meta.setOwningPlayer(player);
         setItemMeta(meta);
         return this;
@@ -143,8 +138,7 @@ public class ItemBuilder implements Listener {
     }
 
     public ItemBuilder addProtection(int level) {
-        return addEnchant(Enchantment.PROTECTION_EXPLOSIONS, level).addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, level).addEnchant(Enchantment.PROTECTION_FIRE, level)
-                .addEnchant(Enchantment.PROTECTION_PROJECTILE, level);
+        return addEnchant(Enchantment.PROTECTION_EXPLOSIONS, level).addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, level).addEnchant(Enchantment.PROTECTION_FIRE, level).addEnchant(Enchantment.PROTECTION_PROJECTILE, level);
     }
 
     public ItemBuilder addItemFlag(ItemFlag flag) {
@@ -155,9 +149,7 @@ public class ItemBuilder implements Listener {
     }
 
     public ItemBuilder addItemFlag(ItemFlag... flags) {
-        for (ItemFlag flag : flags) {
-            addItemFlag(flag);
-        }
+        Arrays.stream(flags).forEach(this::addItemFlag);
         return this;
     }
 
@@ -172,9 +164,8 @@ public class ItemBuilder implements Listener {
         if(interactConsumer != null) Bukkit.getServer().getPluginManager().registerEvents(this, SunderiaSkyblock.getInstance());
         ItemMeta meta = getItemMeta();
         List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-        String l = ChatColor.DARK_GRAY + "minemobsutils:" + ChatColor.stripColor(getItemMeta().getDisplayName().replaceAll("\\s+", "_").toLowerCase());
-        lore.removeIf(s -> s.equalsIgnoreCase(l));
-        lore.add(l);
+        lore.removeIf(s -> s.equalsIgnoreCase(new StringBuilder().append(ChatColor.DARK_GRAY).append("sunderiaskyblock:").append(ChatColor.stripColor(getItemMeta().getDisplayName().replaceAll("\\s+", "_").toLowerCase())).toString()));
+        lore.add(new StringBuilder().append(ChatColor.DARK_GRAY).append("sunderiaskyblock:").append(ChatColor.stripColor(getItemMeta().getDisplayName().replaceAll("\\s+", "_").toLowerCase())).toString());
         meta.setLore(lore);
         stack.setItemMeta(meta);
         return stack;
