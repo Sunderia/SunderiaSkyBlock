@@ -32,7 +32,7 @@ public class CommandPlugin implements CommandExecutor {
             return true;
         }
         if (!getCommandInfo().arguments().isEmpty()) {
-            if (arguments.length != getCommandInfo().arguments()) {
+            if (arguments.size() != getCommandInfo().arguments().size()) {
                 sender.sendMessage(SunderiaSkyblock.header + ChatColor.RED + "Use these arguments: " + Bukkit.getPluginCommand(getCommandInfo().name()).getUsage());
                 return true;
             }
