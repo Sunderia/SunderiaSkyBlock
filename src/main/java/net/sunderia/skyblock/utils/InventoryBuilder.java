@@ -57,12 +57,11 @@ public class InventoryBuilder implements Listener {
         return this;
     }
 
-    public InventoryBuilder onUpdate(Consumer<InventoryEvent> eventConsumer, int time) {
+    public InventoryBuilder onUpdate(Consumer<InventoryEvent> eventConsumer, int timeInSeconds) {
         this.updateEventConsumer = eventConsumer;
-        this.runnableTime = time;
+        this.runnableTime = timeInSeconds * 20;
         return this;
     }
-
 
     public InventoryBuilder setCancelled() {
         this.cancelEvent = !cancelEvent;
