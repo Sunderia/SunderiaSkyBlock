@@ -36,14 +36,14 @@ public class CommandPlugin implements CommandExecutor {
             return true;
         }
         if (!getCommandInfo().arguments().isEmpty()) {
-            if (arguments[0] == null) {
+            if (arguments.length != getCommandInfo().arguments()) {
                 sender.sendMessage(SunderiaSkyblock.header + ChatColor.RED + "Use these arguments: " + Bukkit.getPluginCommand(getCommandInfo().name()).getUsage());
                 return true;
             }
             for (int index1 = 0; index1 < commandInfo.arguments().split("\\s+").length; index1++) {
                 int finalIndex = index1;
                 if(Arrays.stream(commandInfo.arguments().split("\\s+")[index1].split("/")).noneMatch(arg -> arg.equalsIgnoreCase(arguments[finalIndex]))){
-                    sender.sendMessage(SunderiaSkyblock.header + ChatColor.RED + "Use these arguments: " + Bukkit.getPluginCommand(getCommandInfo().name()).getUsage());
+                    sender.sendMessage(SunderiaSkyblock.header + ChatColor.RED + "Use these arguments: /" + getCommandInfo().name() + " " + Bukkit.getPluginCommand(getCommandInfo().name()).getUsage());
                     return true;
                 }
             }
