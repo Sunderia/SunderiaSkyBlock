@@ -21,10 +21,6 @@ public class CommandPlugin implements CommandExecutor {
         if (commandInfo == null) throw new IllegalArgumentException("Commands classes must have ClassInfo annotation.");
     }
 
-    public static String arrayToString(String[] array) {
-        return Arrays.toString(array).replace("[", "").replace(",", "").replace("]", "");
-    }
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String aliasUsed, @NotNull String[] arguments) {
         if (commandInfo.needsPlayer() && !(sender instanceof Player)) {
