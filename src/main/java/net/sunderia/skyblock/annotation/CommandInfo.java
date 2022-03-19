@@ -1,6 +1,4 @@
-package fr.sunderia.skyblock.annotation;
-
-import fr.sunderia.skyblock.commands.CommandPlugin;
+package net.sunderia.skyblock.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,7 +1,7 @@
-package fr.sunderia.skyblock;
+package net.sunderia.skyblock;
 
-import fr.sunderia.skyblock.annotation.CommandInfo;
-import fr.sunderia.skyblock.listener.Events;
+import net.sunderia.skyblock.annotation.CommandInfo;
+import net.sunderia.skyblock.listener.Events;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;

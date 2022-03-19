@@ -1,4 +1,4 @@
-package fr.sunderia.skyblock.listener;
+package net.sunderia.skyblock.listener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
