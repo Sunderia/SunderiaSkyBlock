@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author <a href="https://github.com/Minemobs/MinemobsUtils/blob/main/src/main/java/fr/minemobs/minemobsutils/utils/InventoryBuilder.java">minemobs</a>
+ */
+
 public class InventoryBuilder implements Listener {
 
     private int rows = 3;
@@ -24,7 +28,6 @@ public class InventoryBuilder implements Listener {
     private Consumer<InventoryOpenEvent> openEventConsumer = InventoryEvent::getInventory;
     private Consumer<InventoryEvent> updateEventConsumer;
     private BukkitRunnable runnable;
-    //1 Second
     private int runnableTime = 20;
     private boolean cancelEvent = false;
 
