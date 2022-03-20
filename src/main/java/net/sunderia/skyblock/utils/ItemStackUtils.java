@@ -50,8 +50,8 @@ public class ItemStackUtils {
      * This method use the lore to check if both items have the same name.
      * This method only works on custom items.
      *
-     * @param first  The first item
-     * @param second The second item
+     * @param firstItemStack  The first item
+     * @param secondItemStack The second item
      * @return true if the two items are the same
      * @since 1.4
      */
