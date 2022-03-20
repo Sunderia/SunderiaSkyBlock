@@ -21,5 +21,4 @@ public class Events implements Listener {
     public void onJoin(PlayerJoinEvent event){
         event.getPlayer().getInventory().setItem(4, Items.PICKAXE_3X3.getItemStack());
     }
-
 }

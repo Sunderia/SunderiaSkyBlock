@@ -6,11 +6,14 @@ import org.bukkit.inventory.ItemStack;
 
 public enum Items {
 
-    PICKAXE_3X3(new ItemBuilder(Material.IRON_PICKAXE).onInteract(event -> event.getPlayer().sendMessage("Test good")).setLore("This is a 3x3 pickaxe like a hammer").build());
+    PICKAXE_3X3(new ItemBuilder(Material.IRON_PICKAXE).setDisplayName("3x3 Pickaxe").onInteract(event -> System.out.println("EEEe"))
+            .setLore("This is a 3x3 pickaxe like a hammer").build());
 
     public final ItemStack itemStack;
 
-    Items(ItemStack stack) {this.itemStack = stack.clone();}
+    Items(ItemStack stack) {
+        this.itemStack = stack.clone();
+    }
 
     public ItemStack getItemStack() {
         return itemStack;

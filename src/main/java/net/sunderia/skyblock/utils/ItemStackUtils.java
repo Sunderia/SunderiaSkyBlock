@@ -55,15 +55,9 @@ public class ItemStackUtils {
      * @return true if the two items are the same
      * @since 1.4
      */
-    public static boolean isSameItem(ItemStack first, ItemStack second) {
-        if (!hasLore(first) || !hasLore(second)) return false;
-        ItemMeta im1 = first.clone().getItemMeta();
-        ItemMeta im2 = second.clone().getItemMeta();
-        String lore = im1.getLore().get(im1.getLore().size() - 1);
-        String lore2 = im2.getLore().get(im2.getLore().size() - 1);
-        if (!ChatColor.stripColor(lore).startsWith("minemobsutils:") || !ChatColor.stripColor(lore2).startsWith("minemobsutils:"))
-            return false;
-        return lore.equals(lore2);
+    public static boolean isSameItem(ItemStack firstItemStack, ItemStack secondItemStack) {
+        if (!hasLore(firstItemStack) || !hasLore(secondItemStack) || !ChatColor.stripColor(firstItemStack.clone().getItemMeta().getLore().get(firstItemStack.clone().getItemMeta().getLore().size() - 1)).startsWith("sunderiaskyblock:") || !ChatColor.stripColor(secondItemStack.clone().getItemMeta().getLore().get(secondItemStack.clone().getItemMeta().getLore().size() - 1)).startsWith("sunderiaskyblock:")) return false;
+        return firstItemStack.clone().getItemMeta().getLore().get(firstItemStack.clone().getItemMeta().getLore().size() - 1).equals(secondItemStack.clone().getItemMeta().getLore().get(secondItemStack.clone().getItemMeta().getLore().size() - 1));
     }
 
     public static boolean isAirOrNull(ItemStack item) {

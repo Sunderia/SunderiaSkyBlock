@@ -20,8 +20,12 @@ public class SunderiaSkyblock extends JavaPlugin {
     public static final String header = ChatColor.DARK_GREEN + "[" + ChatColor.GREEN + "SunderiaSkyblock" + ChatColor.DARK_GREEN + "] ";
 
     @Override
-    public void onEnable() {
+    public void onLoad() {
         instance = this;
+    }
+
+    @Override
+    public void onEnable() {
         this.saveDefaultConfig();
         registerListeners(new Reflections("net.sunderia.skyblock.listener").getSubTypesOf(Listener.class).stream().map(clazz -> (Class<? extends Listener>) clazz).collect(Collectors.toSet()));
         registerCommands(new Reflections("net.sunderia.skyblock.commands").getTypesAnnotatedWith(CommandInfo.class).stream().map(clazz -> (Class<? extends CommandExecutor>) clazz).collect(Collectors.toSet()));
