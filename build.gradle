@@ -40,10 +40,21 @@ spigot {
             permissionMessage = errorPermissionMessage
             usage = '/visibleholo <true/false>'
         }
+        test {
+            aliases = ['t']
+            description = 'A test command.'
+            permission = 'sunderiaskyblock.test'
+            permissionMessage = errorPermissionMessage
+            usage = '/test'
+        }
     }
     permissions {
         'sunderiaskyblock.visibleholo' {
-            description = 'Allows to use visibleholo command.'
+            description = 'Allows to use the visibleholo command.'
+            defaults = 'op'
+        }
+        'sunderiaskyblock.test' {
+            description = 'Allows to use the test command.'
             defaults = 'op'
         }
     }
