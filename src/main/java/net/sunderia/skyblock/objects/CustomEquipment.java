@@ -68,6 +68,18 @@ public class CustomEquipment {
         return this;
     }
 
+    public CustomEquipment setHelmet(ItemStack itemStackHelmet, Recipe recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
+    public CustomEquipment setHelmet(ItemStack itemStackHelmet, Recipes recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
     public CustomEquipment setItemStackHelmet(ItemStack itemStackHelmet) {
         this.itemStackHelmet = itemStackHelmet;
         return this;
@@ -80,6 +92,18 @@ public class CustomEquipment {
 
     public CustomEquipment setRecipeHelmet(Recipes recipeHelmet) {
         SunderiaSkyblock.getInstance().getServer().addRecipe(recipeHelmet.getRecipe());
+        return this;
+    }
+
+    public CustomEquipment setChestplate(ItemStack itemStackHelmet, Recipes recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
+    public CustomEquipment setChestplate(ItemStack itemStackHelmet, Recipe recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
         return this;
     }
 
@@ -98,6 +122,18 @@ public class CustomEquipment {
         return this;
     }
 
+    public CustomEquipment setLeggings(ItemStack itemStackHelmet, Recipes recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
+    public CustomEquipment setLeggings(ItemStack itemStackHelmet, Recipe recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
     public CustomEquipment setItemStackLeggings(ItemStack itemStackLeggings) {
         this.itemStackLeggings = itemStackLeggings;
         return this;
@@ -110,6 +146,18 @@ public class CustomEquipment {
 
     public CustomEquipment setRecipeLeggings(Recipes recipeLeggings) {
         SunderiaSkyblock.getInstance().getServer().addRecipe(recipeLeggings.getRecipe());
+        return this;
+    }
+
+    public CustomEquipment setBoots(ItemStack itemStackHelmet, Recipes recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
+    public CustomEquipment setBoots(ItemStack itemStackHelmet, Recipe recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
         return this;
     }
 
@@ -128,6 +176,18 @@ public class CustomEquipment {
         return this;
     }
 
+    public CustomEquipment setShovel(ItemStack itemStackHelmet, Recipes recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
+    public CustomEquipment setShovel(ItemStack itemStackHelmet, Recipe recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
     public CustomEquipment setItemStackShovel(ItemStack itemStackShovel) {
         this.itemStackShovel = itemStackShovel;
         return this;
@@ -140,6 +200,18 @@ public class CustomEquipment {
 
     public CustomEquipment setRecipeShovel(Recipes recipeShovel) {
         SunderiaSkyblock.getInstance().getServer().addRecipe(recipeShovel.getRecipe());
+        return this;
+    }
+
+    public CustomEquipment setAxe(ItemStack itemStackHelmet, Recipes recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
+    public CustomEquipment setAxe(ItemStack itemStackHelmet, Recipe recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
         return this;
     }
 
@@ -158,6 +230,18 @@ public class CustomEquipment {
         return this;
     }
 
+    public CustomEquipment setSword(ItemStack itemStackHelmet, Recipes recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
+    public CustomEquipment setSword(ItemStack itemStackHelmet, Recipe recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
     public CustomEquipment setItemStackSword(ItemStack itemStackSword) {
         this.itemStackSword = itemStackSword;
         return this;
@@ -173,6 +257,18 @@ public class CustomEquipment {
         return this;
     }
 
+    public CustomEquipment setPickaxe(ItemStack itemStackHelmet, Recipes recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
+    public CustomEquipment setPickaxe(ItemStack itemStackHelmet, Recipe recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
     public CustomEquipment setItemStackPickaxe(ItemStack itemStackPickaxe) {
         this.itemStackPickaxe = itemStackPickaxe;
         return this;
@@ -185,6 +281,18 @@ public class CustomEquipment {
 
     public CustomEquipment setRecipePickaxe(Recipes recipePickaxe) {
         SunderiaSkyblock.getInstance().getServer().addRecipe(recipePickaxe.getRecipe());
+        return this;
+    }
+
+    public CustomEquipment setHoe(ItemStack itemStackHelmet, Recipes recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
+        return this;
+    }
+
+    public CustomEquipment setHoe(ItemStack itemStackHelmet, Recipe recipeHelmet) {
+        setItemStackHelmet(itemStackHelmet);
+        setRecipeHelmet(recipeHelmet);
         return this;
     }
 
