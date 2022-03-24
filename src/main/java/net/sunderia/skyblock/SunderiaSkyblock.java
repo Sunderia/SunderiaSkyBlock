@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,10 @@ public class SunderiaSkyblock extends JavaPlugin {
 
     public static NamespacedKey getKey(String key) {
         return new NamespacedKey(getInstance(), key);
+    }
+
+    public static String arrayToString(String[] array){
+        return Arrays.toString(array).replace("[", "").replace("]", "").replace(", ", "");
     }
 
     public static SunderiaSkyblock getInstance(){

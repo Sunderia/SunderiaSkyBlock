@@ -68,7 +68,7 @@ public class CustomEquipment {
         return this;
     }
 
-    public CustomEquipment setHelmet(ItemStack itemStackHelmet) {
+    public CustomEquipment setItemStackHelmet(ItemStack itemStackHelmet) {
         this.itemStackHelmet = itemStackHelmet;
         return this;
     }
@@ -83,7 +83,7 @@ public class CustomEquipment {
         return this;
     }
 
-    public CustomEquipment setChestplate(ItemStack itemStackChestplate) {
+    public CustomEquipment setItemStackChestplate(ItemStack itemStackChestplate) {
         this.itemStackChestplate = itemStackChestplate;
         return this;
     }
@@ -98,7 +98,7 @@ public class CustomEquipment {
         return this;
     }
 
-    public CustomEquipment setLeggings(ItemStack itemStackLeggings) {
+    public CustomEquipment setItemStackLeggings(ItemStack itemStackLeggings) {
         this.itemStackLeggings = itemStackLeggings;
         return this;
     }
@@ -113,7 +113,7 @@ public class CustomEquipment {
         return this;
     }
 
-    public CustomEquipment setBoots(ItemStack itemStackBoots) {
+    public CustomEquipment setItemStackBoots(ItemStack itemStackBoots) {
         this.itemStackBoots = itemStackBoots;
         return this;
     }
@@ -128,7 +128,7 @@ public class CustomEquipment {
         return this;
     }
 
-    public CustomEquipment setShovel(ItemStack itemStackShovel) {
+    public CustomEquipment setItemStackShovel(ItemStack itemStackShovel) {
         this.itemStackShovel = itemStackShovel;
         return this;
     }
@@ -143,7 +143,7 @@ public class CustomEquipment {
         return this;
     }
 
-    public CustomEquipment setAxe(ItemStack itemStackAxe) {
+    public CustomEquipment setItemStackAxe(ItemStack itemStackAxe) {
         this.itemStackAxe = itemStackAxe;
         return this;
     }
@@ -158,7 +158,7 @@ public class CustomEquipment {
         return this;
     }
 
-    public CustomEquipment setSword(ItemStack itemStackSword) {
+    public CustomEquipment setItemStackSword(ItemStack itemStackSword) {
         this.itemStackSword = itemStackSword;
         return this;
     }
@@ -173,7 +173,7 @@ public class CustomEquipment {
         return this;
     }
 
-    public CustomEquipment setPickaxe(ItemStack itemStackPickaxe) {
+    public CustomEquipment setItemStackPickaxe(ItemStack itemStackPickaxe) {
         this.itemStackPickaxe = itemStackPickaxe;
         return this;
     }
@@ -188,7 +188,7 @@ public class CustomEquipment {
         return this;
     }
 
-    public CustomEquipment setHoe(ItemStack itemStackHoe) {
+    public CustomEquipment setItemStackHoe(ItemStack itemStackHoe) {
         this.itemStackHoe = itemStackHoe;
         return this;
     }
@@ -205,10 +205,21 @@ public class CustomEquipment {
 
     //Init
     public CustomEquipment initArmor(){
+        initHelmet();
+        initChestplate();
+        initLeggings();
+        initBoots();
         return this;
     }
 
-    public CustomEquipment initTools() { return this; }
+    public CustomEquipment initTools() {
+        initSword();
+        initPickaxe();
+        initAxe();
+        initShovel();
+        initHoe();
+        return this;
+    }
 
     public CustomEquipment initHelmet(){
         return this;
