@@ -1,8 +1,11 @@
 package net.sunderia.skyblock.objects;
 
 import net.sunderia.skyblock.SunderiaSkyblock;
+import net.sunderia.skyblock.utils.ItemStackUtils;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.jetbrains.annotations.NotNull;
 
 public class CustomEquipment {
 
@@ -16,14 +19,26 @@ public class CustomEquipment {
     private ItemStack itemStackHoe;
     private ItemStack itemStackSword;
     private ItemStack itemStackShovel;
+    private ItemStack itemStackArmor;
+    private String customName;
 
-    public CustomEquipment(ItemStack itemStack){
+    public CustomEquipment(@NotNull ItemStack itemStack, @NotNull ItemStack itemStackArmor, @NotNull String customName){
         this.itemStack = itemStack;
+        this.customName = customName;
+        if(ItemStackUtils.isAnArmor(itemStackArmor)) this.itemStackArmor = itemStackArmor;
     }
 
     //Getters
     public ItemStack getItemStack() {
         return itemStack;
+    }
+
+    public ItemStack getItemStackArmor(){
+        return itemStackArmor;
+    }
+
+    public String getCustomName(){
+        return customName;
     }
 
     public ItemStack getHelmet() {
@@ -65,6 +80,16 @@ public class CustomEquipment {
     //Setters
     public CustomEquipment setItemStack(ItemStack itemStack) {
         this.itemStack = itemStack;
+        return this;
+    }
+
+    public CustomEquipment setCustomName(String customName){
+        this.customName = customName;
+        return this;
+    }
+
+    public CustomEquipment setItemStackArmor(ItemStack itemStackArmor){
+        if(ItemStackUtils.isAnArmor(itemStackArmor)) this.itemStackArmor = itemStackArmor;
         return this;
     }
 
@@ -330,6 +355,7 @@ public class CustomEquipment {
     }
 
     public CustomEquipment initHelmet(){
+        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(customName + "_helmet"), itemStackArmor));
         return this;
     }
 
