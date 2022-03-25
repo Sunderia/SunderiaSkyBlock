@@ -21,11 +21,17 @@ public class CustomEquipment {
     private ItemStack itemStackShovel;
     private ItemStack itemStackArmor;
     private String customName;
+    private boolean resetItemStackArmorName;
 
-    public CustomEquipment(@NotNull ItemStack itemStack, @NotNull ItemStack itemStackArmor, @NotNull String customName){
+    public CustomEquipment(@NotNull ItemStack itemStack, @NotNull ItemStack itemStackArmor, @NotNull String customName, boolean resetItemStackArmorName){
         this.itemStack = itemStack;
         this.customName = customName;
+        this.resetItemStackArmorName = resetItemStackArmorName;
         if(ItemStackUtils.isAnArmor(itemStackArmor)) this.itemStackArmor = itemStackArmor;
+    }
+
+    public CustomEquipment(@NotNull ItemStack itemStack, @NotNull ItemStack itemStackArmor, @NotNull String customName){
+        this(itemStack, itemStackArmor, customName, false);
     }
 
     //Getters
@@ -39,6 +45,10 @@ public class CustomEquipment {
 
     public String getCustomName(){
         return customName;
+    }
+
+    public boolean getResetItemStackArmorName(){
+        return resetItemStackArmorName;
     }
 
     public ItemStack getHelmet() {
@@ -90,6 +100,11 @@ public class CustomEquipment {
 
     public CustomEquipment setItemStackArmor(ItemStack itemStackArmor){
         if(ItemStackUtils.isAnArmor(itemStackArmor)) this.itemStackArmor = itemStackArmor;
+        return this;
+    }
+
+    public CustomEquipment setResetItemStackArmorName(boolean resetItemStackArmorName){
+        this.resetItemStackArmorName = resetItemStackArmorName;
         return this;
     }
 
