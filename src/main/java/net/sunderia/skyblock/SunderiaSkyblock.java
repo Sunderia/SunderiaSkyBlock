@@ -29,8 +29,8 @@ public class SunderiaSkyblock extends JavaPlugin {
         SunderiaUtils.of(this);
         this.saveDefaultConfig();
         try {
-            SunderiaUtils.registerListeners("net.sunderia.skyblock.listener");
-            SunderiaUtils.registerCommands("net.sunderia.skyblock.commands");
+            SunderiaUtils.registerListeners(this.getClass().getPackageName() + ".listener");
+            SunderiaUtils.registerCommands(this.getClass().getPackageName() + ".commands");
         } catch (IOException e) {
             e.printStackTrace();
         }
