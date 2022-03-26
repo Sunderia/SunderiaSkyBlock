@@ -1,6 +1,6 @@
 package net.sunderia.skyblock.objects;
 
-import net.sunderia.skyblock.utils.ItemBuilder;
+import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

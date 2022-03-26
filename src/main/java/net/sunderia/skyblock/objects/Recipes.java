@@ -1,5 +1,6 @@
 package net.sunderia.skyblock.objects;
 
+import fr.sunderia.sunderiautils.recipes.AnvilRecipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 

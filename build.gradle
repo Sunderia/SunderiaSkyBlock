@@ -12,12 +12,16 @@ tasks.prepareSpigotPlugins.dependsOn shadowJar
 repositories {
     mavenCentral()
     protocolLib()
+    maven {
+        name = "SunderiaRepo"
+        url = "https://maven.galaxyfight.fr/snapshots"
+    }
 }
 
 dependencies {
     compileOnly spigot('1.18.1')
     compileOnly protocolLib('4.7.0')
-    implementation 'org.reflections:reflections:0.10.2'
+    implementation 'fr.sunderia:SunderiaUtils:1.0-SNAPSHOT'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
@@ -32,7 +36,7 @@ spigot {
     name = 'SunderiaSkyblock'
     version = '1.18.1'
     depends('ProtocolLib')
-    commands {
+    /*commands {
         visibleholo {
             aliases = ['vh']
             description = 'Disable or enable the holograms.'
@@ -47,7 +51,7 @@ spigot {
             permissionMessage = errorPermissionMessage
             usage = '/test'
         }
-    }
+    }*/
     permissions {
         'sunderiaskyblock.visibleholo' {
             description = 'Allows to use the visibleholo command.'
@@ -64,6 +68,6 @@ spigot {
         serverPort 25565
         eula = true
     }
-    authors 'noalegeek68'
+    authors 'noalegeek68', 'minemobs'
     apiVersion '1.18'
 }

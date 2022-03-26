@@ -1,20 +1,15 @@
 package net.sunderia.skyblock;
 
-import net.sunderia.skyblock.annotation.CommandInfo;
+import fr.sunderia.sunderiautils.SunderiaUtils;
 import net.sunderia.skyblock.listener.Events;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.reflections.Reflections;
 
-import java.lang.reflect.InvocationTargetException;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Locale;
 
 public class SunderiaSkyblock extends JavaPlugin {
 
@@ -28,10 +23,15 @@ public class SunderiaSkyblock extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        SunderiaUtils.of(this);
         this.saveDefaultConfig();
-        registerListeners(new Reflections("net.sunderia.skyblock.listener").getSubTypesOf(Listener.class).stream().map(clazz -> (Class<? extends Listener>) clazz).collect(Collectors.toSet()));
-        registerCommands(new Reflections("net.sunderia.skyblock.commands").getTypesAnnotatedWith(CommandInfo.class).stream().map(clazz -> (Class<? extends CommandExecutor>) clazz).collect(Collectors.toSet()));
-        Events.update();
+        try {
+            SunderiaUtils.registerListeners("net.sunderia.skyblock.listener");
+            SunderiaUtils.registerCommands("net.sunderia.skyblock.commands");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Bukkit.getScheduler().runTaskTimer(this, Events::onTickEvent, 20, 20);
         getLogger().info("[SunderiaSkyblock] Plugin is enabled.");
     }
 
@@ -40,32 +40,16 @@ public class SunderiaSkyblock extends JavaPlugin {
         getLogger().info("[SunderiaSkyblock] Plugin is disabled.");
     }
 
-    private void registerListeners(@NotNull Set<Class<? extends Listener>> listeners){
-        listeners.forEach(clazz -> {
-            try {
-                Bukkit.getPluginManager().registerEvents(clazz.getDeclaredConstructor().newInstance(), this);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
-                exception.printStackTrace();
-            }
-        });
-    }
-
-    private void registerCommands(@NotNull Set<Class<? extends CommandExecutor>> commands){
-        commands.forEach(clazz -> {
-            try {
-                this.getCommand(clazz.getAnnotation(CommandInfo.class).name()).setExecutor(clazz.getDeclaredConstructor().newInstance());
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
-                exception.printStackTrace();
-            }
-        });
-    }
-
     public static NamespacedKey getKey(String key) {
         return new NamespacedKey(getInstance(), key);
     }
 
     public static String arrayToString(String[] array){
         return Arrays.toString(array).replace("[", "").replace("]", "").replace(", ", "");
+    }
+
+    public static String stringToKey(String string){
+        return string.strip().toLowerCase(Locale.ROOT);
     }
 
     public static SunderiaSkyblock getInstance(){

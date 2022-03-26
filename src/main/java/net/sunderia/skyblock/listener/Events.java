@@ -1,7 +1,7 @@
 package net.sunderia.skyblock.listener;
 
+import fr.sunderia.sunderiautils.utils.ItemStackUtils;
 import net.sunderia.skyblock.objects.Items;
-import net.sunderia.skyblock.utils.ItemStackUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class Events implements Listener {
 
-    public static void update(){
+    public static void onTickEvent() {
 
     }
 
