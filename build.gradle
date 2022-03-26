@@ -8,6 +8,7 @@ group 'org.example'
 version '1.0-SNAPSHOT'
 
 tasks.prepareSpigotPlugins.dependsOn shadowJar
+tasks.runSpigot.dependsOn prepareSpigotPlugins
 
 repositories {
     mavenCentral()
@@ -21,7 +22,7 @@ repositories {
 dependencies {
     compileOnly spigot('1.18.1')
     compileOnly protocolLib('4.7.0')
-    implementation 'fr.sunderia:SunderiaUtils:1.0-SNAPSHOT'
+    implementation 'fr.sunderia:SunderiaUtils:1.0.2-SNAPSHOT'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }

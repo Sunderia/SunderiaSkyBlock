@@ -1,5 +1,6 @@
 package net.sunderia.skyblock.objects;
 
+import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import fr.sunderia.sunderiautils.utils.ItemStackUtils;
 import net.sunderia.skyblock.SunderiaSkyblock;
 import org.bukkit.Material;
@@ -11,6 +12,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
+
+/**
+ * "Shitty code"
+ * - minemobs
+ * oh btw i fixed some of his methods like {@link #initHelmet()} 'cause he's dumb
+ * @author NoaLeGeek
+ */
 public class CustomEquipment {
 
     private ItemStack itemStack;
@@ -363,48 +371,47 @@ public class CustomEquipment {
     }
 
     public CustomEquipment initHelmet(){
-        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_helmet"), itemStackArmor).setIngredient('A', itemStack.getType()).shape("AAA", "A A"));
+        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_helmet"), new ItemBuilder(Material.NETHERITE_HELMET).build()).shape("AAA", "A A", "   ").setIngredient('A', itemStack.getType()));
         return this;
     }
 
     public CustomEquipment initChestplate(){
-        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_chestplate"), itemStackArmor).setIngredient('A', itemStack.getType()).shape("A A", "AAA", "AAA"));
+        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_chestplate"), new ItemBuilder(Material.NETHERITE_CHESTPLATE).build()).shape("A A", "AAA", "AAA").setIngredient('A', itemStack.getType()));
         return this;
     }
 
     public CustomEquipment initLeggings(){
-        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_leggings"), itemStackArmor).setIngredient('A', itemStack.getType()).shape("AAA", "A A", "A A"));
+        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_leggings"), new ItemBuilder(Material.NETHERITE_LEGGINGS).build()).shape("AAA", "A A", "A A").setIngredient('A', itemStack.getType()));
         return this;
     }
 
     public CustomEquipment initBoots(){
-        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_boots"), itemStackArmor).setIngredient('A', itemStack.getType()).shape("A A", "A A"));
+        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_boots"), new ItemBuilder(Material.NETHERITE_BOOTS).build()).shape("A A", "A A").setIngredient('A', itemStack.getType()));
         return this;
     }
 
     public CustomEquipment initPickaxe() {
-        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_pickaxe"), itemStackArmor).setIngredient('A', itemStack.getType()).setIngredient('B', Material.STICK).shape("AAA", " B ", " B "));
+        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_pickaxe"), new ItemBuilder(Material.NETHERITE_PICKAXE).build()).shape("AAA", " B ", " B ").setIngredient('A', itemStack.getType()).setIngredient('B', Material.STICK));
         return this;
     }
 
     public CustomEquipment initHoe(){
-        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_hoe"), itemStackArmor).setIngredient('A', itemStack.getType()).setIngredient('B', Material.STICK).shape("AA ", " B ", " B "));
+        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_hoe"), new ItemBuilder(Material.NETHERITE_HOE).build()).shape("AA ", " B ", " B ").setIngredient('A', itemStack.getType()).setIngredient('B', Material.STICK));
         return this;
     }
 
     public CustomEquipment initSword(){
-        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_sword"), itemStackArmor).setIngredient('A', itemStack.getType()).setIngredient('B', Material.STICK).shape(" A ", " A ", " B "));
+        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_sword"), new ItemBuilder(Material.NETHERITE_SWORD).build()).shape(" A ", " A ", " B ").setIngredient('A', itemStack.getType()).setIngredient('B', Material.STICK));
         return this;
     }
 
     public CustomEquipment initAxe(){
-        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_axe"), itemStackArmor).setIngredient('A', itemStack.getType()).setIngredient('B', Material.STICK).shape("AA ", "AB ", " B "));
+        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_axe"), new ItemBuilder(Material.NETHERITE_AXE).build()).shape("AA ", "AB ", " B ").setIngredient('A', itemStack.getType()).setIngredient('B', Material.STICK));
         return this;
     }
 
     public CustomEquipment initShovel(){
-        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_shovel"), itemStackArmor).setIngredient('A', itemStack.getType()).setIngredient('B', Material.STICK).shape(" A ", " B ", " B "));
+        SunderiaSkyblock.getInstance().getServer().addRecipe(new ShapedRecipe(SunderiaSkyblock.getKey(SunderiaSkyblock.stringToKey(itemStack.getItemMeta().getDisplayName()) + "_shovel"), new ItemBuilder(Material.NETHERITE_SHOVEL).build()).shape(" A ", " B ", " B ").setIngredient('A', itemStack.getType()).setIngredient('B', Material.STICK));
         return this;
     }
-
 }
