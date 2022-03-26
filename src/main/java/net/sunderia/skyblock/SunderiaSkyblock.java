@@ -53,16 +53,15 @@ public class SunderiaSkyblock extends JavaPlugin {
         return new NamespacedKey(getInstance(), key);
     }
 
-    public static String arrayToString(String[] array){
+    public static String arrayToString(String[] array) {
         return Arrays.toString(array).replace("[", "").replace("]", "").replace(", ", "");
     }
 
-    public static String stringToKey(String string){
+    public static String stringToKey(String string) {
         return string.strip().toLowerCase(Locale.ROOT);
     }
 
-    public static SunderiaSkyblock getInstance(){
+    public static SunderiaSkyblock getInstance() {
         return instance;
     }
-
 }
