@@ -63,4 +63,15 @@ public class InventoryUtils {
         return fillColumn(inventory, itemStack, column, row, false);
     }
 
+    public Inventory fillColumn(Inventory inventory, List<ItemStack> itemStack, int column, int rows, boolean cancelled){
+        for(int index = column - 1; index < column + (rows * 9); index += 9){
+            inventory.setItem(index, cancelled ? new ItemBuilder(itemStack.get(index)).onInteract(event -> event.setCancelled(true)).build() : itemStack.get(index));
+        }
+        return inventory;
+    }
+
+    public Inventory fillColumn(Inventory inventory, List<ItemStack> itemStack, int column, int row){
+        return fillColumn(inventory, itemStack, column, row, false);
+    }
+
 }

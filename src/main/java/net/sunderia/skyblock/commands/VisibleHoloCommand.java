@@ -22,22 +22,15 @@ public class VisibleHoloCommand extends PluginCommand {
 
     @Override
     public void onCommand(@NotNull Player player, @NotNull String[] args) {
-        //A bit more complicated but better.
-        // - Minemobs
-        getArg(args, 0).ifPresentOrElse(s -> {
-            if(notABool(s)) {
-                player.sendMessage("Not a boolean.");
+        getArg(args, 0).ifPresentOrElse(arg -> {
+            if(!arg.equalsIgnoreCase("true") && !arg.equalsIgnoreCase("false")) {
+                player.sendMessage(SunderiaSkyblock.header + ChatColor.RED + getInfo().usage());
                 return;
             }
-            boolean b = Boolean.parseBoolean(s);
-            SunderiaSkyblock.getInstance().getConfig().set("visibleholo." + player.getUniqueId(), b);
+            SunderiaSkyblock.getInstance().getConfig().set("visibleholo." + player.getUniqueId(), Boolean.parseBoolean(arg));
             SunderiaSkyblock.getInstance().saveConfig();
-            player.sendMessage(SunderiaSkyblock.header + "The visibleholo config has successfully been set to " + (b ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
-        }, () -> player.sendMessage("Missing argument."));
-    }
-
-    private boolean notABool(String s) {
-        return !s.equalsIgnoreCase("true") && !s.equalsIgnoreCase("false");
+            player.sendMessage(SunderiaSkyblock.header + "The visibleholo config has successfully been set to " + (Boolean.parseBoolean(arg) ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
+        }, () -> player.sendMessage(SunderiaSkyblock.header + ChatColor.RED + getInfo().usage()));
     }
 
 }
