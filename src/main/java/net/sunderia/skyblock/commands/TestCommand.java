@@ -2,7 +2,7 @@ package net.sunderia.skyblock.commands;
 
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
-import fr.sunderia.sunderiautils.utils.EnchantmentBuilder;
+import fr.sunderia.sunderiautils.enchantments.EnchantmentBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;

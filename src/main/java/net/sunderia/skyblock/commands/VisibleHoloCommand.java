@@ -8,8 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
-
 @CommandInfo(name = "visibleholo", aliases = {"vh"}, permission = "sunderiaskyblock.visibleholo", usage = "/<command> true/false", requiresPlayer = true)
 public class VisibleHoloCommand extends PluginCommand {
 
@@ -24,9 +22,22 @@ public class VisibleHoloCommand extends PluginCommand {
 
     @Override
     public void onCommand(@NotNull Player player, @NotNull String[] args) {
-        SunderiaSkyblock.getInstance().getConfig().set("visibleholo." + player.getUniqueId(), args[0].toLowerCase(Locale.ROOT));
-        SunderiaSkyblock.getInstance().saveConfig();
-        player.sendMessage(SunderiaSkyblock.header + "The visibleholo config has successfully been set to " + (args[0].toLowerCase(Locale.ROOT).equals("true") ? ChatColor.GREEN : ChatColor.RED) + args[0].toLowerCase(Locale.ROOT) + ChatColor.RESET + ".");
+        //A bit more complicated but better.
+        // - Minemobs
+        getArg(args, 0).ifPresentOrElse(s -> {
+            if(notABool(s)) {
+                player.sendMessage("Not a boolean.");
+                return;
+            }
+            boolean b = Boolean.parseBoolean(s);
+            SunderiaSkyblock.getInstance().getConfig().set("visibleholo." + player.getUniqueId(), b);
+            SunderiaSkyblock.getInstance().saveConfig();
+            player.sendMessage(SunderiaSkyblock.header + "The visibleholo config has successfully been set to " + (b ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
+        }, () -> player.sendMessage("Missing argument."));
+    }
+
+    private boolean notABool(String s) {
+        return !s.equalsIgnoreCase("true") && !s.equalsIgnoreCase("false");
     }
 
 }
