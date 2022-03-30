@@ -2,6 +2,7 @@ package net.sunderia.skyblock.commands;
 
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
+import fr.sunderia.sunderiautils.utils.EnchantmentBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,10 @@ public class TestCommand extends PluginCommand {
 
     @Override
     public void onCommand(@NotNull Player player, @NotNull String[] args) {
-
+        int number = Integer.parseInt(args[0]);
+        for(int index = number * 9 - 9; index < number * 9; index++){
+            System.out.println(index);
+        }
     }
 
 }
