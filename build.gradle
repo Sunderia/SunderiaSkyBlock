@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly('org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT')
+    compileOnly spigot('1.18.1')
     compileOnly ('org.spigotmc:spigot:1.18.1-R0.1-SNAPSHOT:remapped-mojang')
     compileOnly protocolLib('4.7.0')
     implementation 'fr.sunderia:SunderiaUtils:1.1.1-SNAPSHOT'
@@ -40,28 +40,10 @@ test {
     useJUnitPlatform()
 }
 
-String errorPermissionMessage = '§2[§aSunderiaSkyblock§2] §cYou don\'t have the permission to execute this command!'
-
 spigot {
     name = 'SunderiaSkyblock'
     version = '1.18.1'
     depends('ProtocolLib')
-    /*commands {
-        visibleholo {
-            aliases = ['vh']
-            description = 'Disable or enable the holograms.'
-            permission = 'sunderiaskyblock.visibleholo'
-            permissionMessage = errorPermissionMessage
-            usage = '/visibleholo <true/false>'
-        }
-        test {
-            aliases = ['t']
-            description = 'A test command.'
-            permission = 'sunderiaskyblock.test'
-            permissionMessage = errorPermissionMessage
-            usage = '/test'
-        }
-    }*/
     permissions {
         'sunderiaskyblock.visibleholo' {
             description = 'Allows to use the visibleholo command.'
