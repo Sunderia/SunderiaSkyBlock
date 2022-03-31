@@ -34,12 +34,12 @@ public class TestCommand extends PluginCommand {
                         std::cout << %s"Noa Familly == null ? " %s<< %s"yes"%s << std::endl;
                         %sreturn %s0%s;
                     }
-                    //Made by minemobs with love.
+                    %s//Made by minemobs with love.
                     """, ChatColor.BLUE,
                         ChatColor.BLUE, ChatColor.RESET,
                         ChatColor.BLUE, ChatColor.RESET, integer, ChatColor.RESET, ChatColor.GREEN, ChatColor.RESET,
                         ChatColor.GREEN, ChatColor.RESET, ChatColor.GREEN, ChatColor.RESET,
-                        ChatColor.BLUE, integer, ChatColor.RESET));
+                        ChatColor.BLUE, integer, ChatColor.RESET, ChatColor.GRAY));
             }
         });
         int number = Integer.parseInt(args[0]);
