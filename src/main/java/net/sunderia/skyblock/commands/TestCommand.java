@@ -11,7 +11,7 @@ public class TestCommand extends PluginCommand {
 
     /**
      * This constructor is used to register the command and check if the command has the correct annotation.
-     *
+     * ur mom
      * @param plugin An instance of the plugin.
      */
     public TestCommand(JavaPlugin plugin) {
