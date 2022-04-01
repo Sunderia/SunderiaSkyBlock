@@ -10,8 +10,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class Items {
 
-    public static final ItemStack PICKAXE_3X3 = new ItemBuilder(Material.IRON_PICKAXE).setDisplayName("3x3 Pickaxe").setLore("This is a 3x3 pickaxe like a hammer").onInteract(event -> {
-        if(event.getAction() != Action.RIGHT_CLICK_AIR || !ItemStackUtils.isSameItem(event.getItem(), Items.getItemFromName("PICKAXE_3X3"))) return;
+    public static final ItemStack PICKAXE_3X3 = new ItemBuilder(Material.IRON_PICKAXE).setDisplayName("3x3 Pickaxe").setLore("This is a 3x3 pickaxe like a hammer").onInteract(event -> event.getPlayer().sendMessage("Test pickaxe")).setLore("It throws GRENADA.").build();
+    public static final ItemStack MINEMOBS_GUN = new ItemBuilder(Material.IRON_PICKAXE).setDisplayName("Minemobs gun").setLore("Minemobs's gun he coded all himself").onInteract(event -> {
+        if(event.getAction() != Action.RIGHT_CLICK_AIR || !ItemStackUtils.isSameItem(event.getItem(), Items.getItemFromName("MINEMOBS_GUN"))) return;
         Snowball entity = (Snowball) event.getPlayer().getWorld().spawnEntity(event.getPlayer().getEyeLocation(), EntityType.SNOWBALL);
         entity.setShooter(event.getPlayer());
         entity.setVelocity(event.getPlayer().getLocation().getDirection().multiply(1.5));
@@ -21,8 +22,7 @@ public class Items {
 
     /**
      * @author minemobs
-     * I made this function on Noa's computer
-     * @param name Variable name
+     * @param name Item name
      * @return {@link Items item}
      */
     public static ItemStack getItemFromName(String name) {
