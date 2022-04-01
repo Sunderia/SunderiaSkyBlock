@@ -1,12 +1,9 @@
 package net.sunderia.skyblock;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
-import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import net.sunderia.skyblock.listener.Events;
-import net.sunderia.skyblock.objects.CustomEquipment;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,12 +32,6 @@ public class SunderiaSkyblock extends JavaPlugin {
             e.printStackTrace();
         }
         Bukkit.getScheduler().runTaskTimer(this, Events::onTickEvent, 20, 20);
-        CustomEquipment e = new CustomEquipment(
-                new ItemBuilder(Material.NETHERITE_BLOCK).build(),
-                new ItemBuilder(Material.NETHERITE_INGOT).build(),
-                true);
-        e.initArmor();
-        e.initTools();
         getLogger().info("[SunderiaSkyblock] Plugin is enabled.");
     }
 
