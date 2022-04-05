@@ -9,7 +9,7 @@ import org.bukkit.inventory.Inventory;
 
 public enum Inventories {
 
-    TESTGUI(new InventoryBuilder("Test Gui", 3, 3).build());
+    TESTGUI(new InventoryBuilder("Test Gui", 3).build());
 
     public final Inventory inv;
 

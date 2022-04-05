@@ -21,15 +21,7 @@ public class TestCommand extends PluginCommand {
     @Override
     public void onCommand(@NotNull Player player, @NotNull String[] args) {
         getArg(args, 0).ifPresent(s -> {
-            int number = Integer.parseInt(args[0]);
-            int number1 = Integer.parseInt(args[1]);
-            for(int index = number * 9 - 9; index < number * 9; index++){
-                System.out.println(index);
-            }
-            System.out.println("\n\n\n");
-            for(int index = number1 - 1; index < number1 + (number * 9); index += 9){
-                System.out.println(index);
-            }
+
         });
     }
 
