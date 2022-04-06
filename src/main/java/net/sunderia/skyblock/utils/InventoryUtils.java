@@ -79,7 +79,7 @@ public class InventoryUtils {
         return fillColumn(inventory, itemStack, column, rows, false);
     }
 
-    public static Inventory emptyAll(Inventory inventory, int rows){
+    public static Inventory clearAll(Inventory inventory, int rows){
         return fillAll(inventory, new ItemStack(Material.AIR), rows);
     }
 
