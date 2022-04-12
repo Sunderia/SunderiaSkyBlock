@@ -23,6 +23,8 @@ public class InventoryUtils {
     }
 
     public static void fillAll(Inventory inventory, List<ItemStack> itemStackList, int rows, boolean cancelled) {
+        if(rows > 6 || rows < 1)
+            throw new IllegalArgumentException("The rows has to be greater than 0 and lower than 7");
         for (int index = 0; index < rows * 9; index++) {
             inventory.setItem(index, cancelled ? new ItemBuilder(itemStackList.get(index)).onInteract(event -> event.setCancelled(true)).build() : itemStackList.get(index));
         }
@@ -45,6 +47,8 @@ public class InventoryUtils {
     }
 
     public static void fillRow(Inventory inventory, List<ItemStack> itemStackList, int row, boolean cancelled) {
+        if(row > 6 || row < 1)
+            throw new IllegalArgumentException("The row has to be greater than 0 and lower than 7");
         if (itemStackList.size() != 9) {
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of 9 but the list has a length of " + itemStackList.size());
         }
@@ -70,6 +74,10 @@ public class InventoryUtils {
     }
 
     public static void fillColumn(Inventory inventory, List<ItemStack> itemStackList, int rows, int column, boolean cancelled) {
+        if(rows > 6 || rows < 1)
+            throw new IllegalArgumentException("The rows has to be greater than 0 and lower than 7");
+        if(column > 9 || column < 1)
+            throw new IllegalArgumentException("The column has to be greater than 0 and lower than 10");
         for (int row = 0; row < rows; row++) {
             inventory.setItem((row * 9) + column - 1, cancelled ? new ItemBuilder(itemStackList.get(row)).onInteract(event -> event.setCancelled(true)).build() : itemStackList.get(row));
         }
@@ -87,10 +95,15 @@ public class InventoryUtils {
         fillBorders(inventory, itemStackList, rows, cancelled);
     }
 
+    public static void fillBorders(Inventory inventory, ItemStack itemStack, int rows) {
+        fillBorders(inventory, itemStack, rows, false);
+    }
+
     public static void fillBorders(Inventory inventory, List<ItemStack> itemStackList, int rows, boolean cancelled) {
-        if (itemStackList.size() != ((rows == 1 ? 11 : 18) + ((rows - 2) * 2))) {
+        if(rows > 6 || rows < 1)
+            throw new IllegalArgumentException("The rows has to be greater than 0 and lower than 7");
+        if (itemStackList.size() != ((rows == 1 ? 11 : 18) + ((rows - 2) * 2)))
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of " + ((rows == 1 ? 11 : 18) + ((rows - 2) * 2)) + " but the list has a length of " + itemStackList.size());
-        }
         fillRow(inventory, itemStackList.subList(0, 9), 1);
         if (rows >= 2) fillRow(inventory, itemStackList.subList(itemStackList.size() - 9, itemStackList.size()), rows);
         if (rows >= 3) {
@@ -99,6 +112,10 @@ public class InventoryUtils {
                 inventory.setItem((row * 9) + 8, cancelled ? new ItemBuilder(itemStackList.get(row + ++count)).onInteract(event -> event.setCancelled(true)).build() : itemStackList.get(row + count));
             }
         }
+    }
+
+    public static void fillBorders(Inventory inventory, List<ItemStack> itemStackList, int rows) {
+        fillBorders(inventory, itemStackList, rows, false);
     }
 
     public static void clearAll(Inventory inventory, int rows) {
