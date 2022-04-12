@@ -23,7 +23,7 @@ public class VisibleHoloCommand extends PluginCommand {
     @Override
     public void onCommand(@NotNull Player player, @NotNull String[] args) {
         getArg(args, 0).ifPresentOrElse(arg -> {
-            if(!arg.equalsIgnoreCase("true") && !arg.equalsIgnoreCase("false")) {
+            if (!arg.equalsIgnoreCase("true") && !arg.equalsIgnoreCase("false")) {
                 player.sendMessage(SunderiaSkyblock.header + ChatColor.RED + getInfo().usage());
                 return;
             }

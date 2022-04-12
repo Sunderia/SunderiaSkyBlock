@@ -2,7 +2,6 @@ package net.sunderia.skyblock.commands;
 
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
-import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -22,10 +21,7 @@ public class TestCommand extends PluginCommand {
     @Override
     public void onCommand(@NotNull Player player, @NotNull String[] args) {
         getArg(args, 0).ifPresent(s -> {
-            int column = Integer.parseInt(args[0]);
-            for (int row = 0; row < 6; row++) {
-                System.out.println(row * 9 + column - 1);
-            }
+
         });
     }
 

@@ -46,7 +46,7 @@ public enum Recipes {
         return anvilRecipe;
     }
 
-    public boolean matches(ShapedRecipe recipe1, ShapedRecipe recipe2){
+    public boolean matches(ShapedRecipe recipe1, ShapedRecipe recipe2) {
         return recipe1.getKey().equals(recipe2.getKey());
     }
 

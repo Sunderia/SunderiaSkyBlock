@@ -10,81 +10,99 @@ import java.util.List;
 
 public class InventoryUtils {
 
-    public static Inventory fillAll(Inventory inventory, ItemStack itemStack, int rows, boolean cancelled) {
+    public static void fillAll(Inventory inventory, ItemStack itemStack, int rows, boolean cancelled) {
         List<ItemStack> itemStackList = new ArrayList<>();
-        for(int i = 0; i < rows * 9; i++){
+        for (int i = 0; i < rows * 9; i++) {
             itemStackList.add(itemStack);
         }
-        return fillAll(inventory, itemStackList, rows, cancelled);
+        fillAll(inventory, itemStackList, rows, cancelled);
     }
 
-    public static Inventory fillAll(Inventory inventory, ItemStack itemStack, int rows) {
-        return fillAll(inventory, itemStack, rows, false);
+    public static void fillAll(Inventory inventory, ItemStack itemStack, int rows) {
+        fillAll(inventory, itemStack, rows, false);
     }
 
-    public static Inventory fillAll(Inventory inventory, List<ItemStack> itemStack, int rows, boolean cancelled) {
+    public static void fillAll(Inventory inventory, List<ItemStack> itemStackList, int rows, boolean cancelled) {
         for (int index = 0; index < rows * 9; index++) {
-            inventory.setItem(index, cancelled ? new ItemBuilder(itemStack.get(index)).onInteract(event -> event.setCancelled(true)).build() : itemStack.get(index));
+            inventory.setItem(index, cancelled ? new ItemBuilder(itemStackList.get(index)).onInteract(event -> event.setCancelled(true)).build() : itemStackList.get(index));
         }
-        return inventory;
     }
 
-    public static Inventory fillAll(Inventory inventory, List<ItemStack> itemStack, int rows) {
-        return fillAll(inventory, itemStack, rows, false);
+    public static void fillAll(Inventory inventory, List<ItemStack> itemStackList, int rows) {
+        fillAll(inventory, itemStackList, rows, false);
     }
 
-    public static Inventory fillRow(Inventory inventory, ItemStack itemStack, int row, boolean cancelled) {
+    public static void fillRow(Inventory inventory, ItemStack itemStack, int row, boolean cancelled) {
         List<ItemStack> itemStackList = new ArrayList<>();
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             itemStackList.add(itemStack);
         }
-        return fillRow(inventory, itemStackList, row, cancelled);
+        fillRow(inventory, itemStackList, row, cancelled);
     }
 
-    public static Inventory fillRow(Inventory inventory, ItemStack itemStack, int row) {
-        return fillRow(inventory, itemStack, row, false);
+    public static void fillRow(Inventory inventory, ItemStack itemStack, int row) {
+        fillRow(inventory, itemStack, row, false);
     }
 
-    public static Inventory fillRow(Inventory inventory, List<ItemStack> itemStack, int row, boolean cancelled) {
+    public static void fillRow(Inventory inventory, List<ItemStack> itemStackList, int row, boolean cancelled) {
+        if (itemStackList.size() != 9) {
+            throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of 9 but the list has a length of " + itemStackList.size());
+        }
         for (int index = row * 9 - 9; index < row * 9; index++) {
-            inventory.setItem(index, cancelled ? new ItemBuilder(itemStack.get(index - 9 * (row - 1))).onInteract(event -> event.setCancelled(true)).build() : itemStack.get(index - 9 * (row - 1)));
+            inventory.setItem(index, cancelled ? new ItemBuilder(itemStackList.get(index - 9 * (row - 1))).onInteract(event -> event.setCancelled(true)).build() : itemStackList.get(index - 9 * (row - 1)));
         }
-        return inventory;
     }
 
-    public static Inventory fillRow(Inventory inventory, List<ItemStack> itemStack, int row) {
-        return fillRow(inventory, itemStack, row, false);
+    public static void fillRow(Inventory inventory, List<ItemStack> itemStackList, int row) {
+        fillRow(inventory, itemStackList, row, false);
     }
 
-    public static Inventory fillColumn(Inventory inventory, ItemStack itemStack, int column, int rows, boolean cancelled) {
+    public static void fillColumn(Inventory inventory, ItemStack itemStack, int rows, int column, boolean cancelled) {
         List<ItemStack> itemStackList = new ArrayList<>();
-        for(int i = 0; i < rows; i++){
+        for (int i = 0; i < rows; i++) {
             itemStackList.add(itemStack);
         }
-        return fillColumn(inventory, itemStackList, column, rows, cancelled);
+        fillColumn(inventory, itemStackList, rows, column, cancelled);
     }
 
-    public static Inventory fillColumn(Inventory inventory, ItemStack itemStack, int column, int rows) {
-        return fillColumn(inventory, itemStack, column, rows, false);
+    public static void fillColumn(Inventory inventory, ItemStack itemStack, int rows, int column) {
+        fillColumn(inventory, itemStack, rows, column, false);
     }
 
-    public static Inventory fillColumn(Inventory inventory, List<ItemStack> itemStack, int column, int rows, boolean cancelled) {
+    public static void fillColumn(Inventory inventory, List<ItemStack> itemStackList, int rows, int column, boolean cancelled) {
         for (int row = 0; row < rows; row++) {
-            inventory.setItem((row * 9) + column - 1, cancelled ? new ItemBuilder(itemStack.get(row)).onInteract(event -> event.setCancelled(true)).build() : itemStack.get(row));
+            inventory.setItem((row * 9) + column - 1, cancelled ? new ItemBuilder(itemStackList.get(row)).onInteract(event -> event.setCancelled(true)).build() : itemStackList.get(row));
         }
-        return inventory;
     }
 
-    public static Inventory fillColumn(Inventory inventory, List<ItemStack> itemStack, int column, int rows) {
-        return fillColumn(inventory, itemStack, column, rows, false);
+    public static void fillColumn(Inventory inventory, List<ItemStack> itemStackList, int rows, int column) {
+        fillColumn(inventory, itemStackList, rows, column, false);
     }
 
-    public static Inventory fillBorders(Inventory inventory, ItemStack itemStack, int rows) {
-        return fillRow(fillColumn(fillColumn(fillRow(inventory, itemStack, 1), itemStack, 1, rows), itemStack, 9, rows), itemStack, rows);
+    public static void fillBorders(Inventory inventory, ItemStack itemStack, int rows, boolean cancelled) {
+        List<ItemStack> itemStackList = new ArrayList<>();
+        for (int i = 0; i < (rows == 1 ? 11 : 18) + ((rows - 2) * 2); i++) {
+            itemStackList.add(itemStack);
+        }
+        fillBorders(inventory, itemStackList, rows, cancelled);
     }
 
-    public static Inventory clearAll(Inventory inventory, int rows){
-        return fillAll(inventory, new ItemStack(Material.AIR), rows);
+    public static void fillBorders(Inventory inventory, List<ItemStack> itemStackList, int rows, boolean cancelled) {
+        if (itemStackList.size() != ((rows == 1 ? 11 : 18) + ((rows - 2) * 2))) {
+            throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of " + ((rows == 1 ? 11 : 18) + ((rows - 2) * 2)) + " but the list has a length of " + itemStackList.size());
+        }
+        fillRow(inventory, itemStackList.subList(0, 9), 1);
+        if (rows >= 2) fillRow(inventory, itemStackList.subList(itemStackList.size() - 9, itemStackList.size()), rows);
+        if (rows >= 3) {
+            for (int row = 1, count = 9; row < rows - 1; row++) {
+                inventory.setItem((row * 9), cancelled ? new ItemBuilder(itemStackList.get(row + count)).onInteract(event -> event.setCancelled(true)).build() : itemStackList.get(row + count));
+                inventory.setItem((row * 9) + 8, cancelled ? new ItemBuilder(itemStackList.get(row + ++count)).onInteract(event -> event.setCancelled(true)).build() : itemStackList.get(row + count));
+            }
+        }
+    }
+
+    public static void clearAll(Inventory inventory, int rows) {
+        fillAll(inventory, new ItemStack(Material.AIR), rows);
     }
 
 }
