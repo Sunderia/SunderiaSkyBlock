@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'kr.entree.spigradle' version '2.2.4'
+    id 'kr.entree.spigradle' version '2.3.4'
     id "com.github.johnrengelman.shadow" version "7.1.2"
     id 'de.undercouch.download' version '5.0.2'
 }
@@ -12,6 +12,11 @@ version '1.0-SNAPSHOT'
 
 tasks.prepareSpigotPlugins.dependsOn shadowJar
 tasks.runSpigot.dependsOn prepareSpigotPlugins
+String mcVersion = '1.18.1'
+
+shadowJar {
+    configurations = [project.configurations.runtimeClasspath, project.configurations.shadow]
+}
 
 repositories {
     mavenCentral()
@@ -21,18 +26,22 @@ repositories {
         name = "Jeff"
         url = 'https://hub.jeff-media.com/nexus/repository/jeff-media-public/'
     }
+    maven {
+        name = "mine-maven"
+        url = 'https://maven.galaxyfight.fr/snapshots'
+    }
 }
 
 dependencies {
-    compileOnly('org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT')
-    compileOnly 'org.spigotmc:spigot:1.18.1-R0.1-SNAPSHOT:remapped-mojang'
+    compileOnly("org.spigotmc:spigot-api:$mcVersion-R0.1-SNAPSHOT")
+    compileOnly "org.spigotmc:spigot:$mcVersion-R0.1-SNAPSHOT:remapped-mojang"
     compileOnly protocolLib('4.7.0')
-    implementation 'fr.sunderia:SunderiaUtils:1.3-SNAPSHOT'
+    shadow 'fr.sunderia:SunderiaUtils:1.3-SNAPSHOT'
 }
 
 spigot {
     name = 'SunderiaSkyblock'
-    version = '1.18.1'
+    version = mcVersion
     depends('ProtocolLib')
     permissions {
         'sunderiaskyblock.visibleholo' {
