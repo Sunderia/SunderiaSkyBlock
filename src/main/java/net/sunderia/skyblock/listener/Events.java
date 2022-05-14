@@ -14,14 +14,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class Events implements Listener {
 
-    public static void onTickEvent() {
+    public static void onSecondPassEvent() {
 
     }
 
     @EventHandler
     public void whenGrenadaExplodaYourTerritoria(ProjectileHitEvent event) {
-        if (!(event.getEntity().getShooter() instanceof Player) || event.getEntityType() != EntityType.SNOWBALL || event.getEntity().getCustomName() == null || !event.getEntity().getCustomName().equals("Grenada"))
-            return;
+        if (!(event.getEntity().getShooter() instanceof Player) || event.getEntityType() != EntityType.SNOWBALL || event.getEntity().getCustomName() == null ||
+                !event.getEntity().getCustomName().equals("Grenada")) return;
         Location loc = event.getHitBlock() == null ? event.getHitEntity().getLocation() : event.getHitBlock().getLocation();
         event.getEntity().getWorld().createExplosion(loc, 1, false, false);
     }

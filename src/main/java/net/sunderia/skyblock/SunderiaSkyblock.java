@@ -8,8 +8,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Locale;
 
 public class SunderiaSkyblock extends JavaPlugin {
 
@@ -31,7 +29,7 @@ public class SunderiaSkyblock extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Bukkit.getScheduler().runTaskTimer(this, Events::onTickEvent, 20, 20);
+        Bukkit.getScheduler().runTaskTimer(this, Events::onSecondPassEvent, 20, 20);
         getLogger().info("[SunderiaSkyblock] Plugin is enabled.");
     }
 
@@ -42,14 +40,6 @@ public class SunderiaSkyblock extends JavaPlugin {
 
     public static NamespacedKey getKey(String key) {
         return new NamespacedKey(getInstance(), key);
-    }
-
-    public static String arrayToString(String[] array) {
-        return Arrays.toString(array).replace("[", "").replace("]", "").replace(", ", "");
-    }
-
-    public static String stringToKey(String string) {
-        return string.strip().toLowerCase(Locale.ROOT);
     }
 
     public static SunderiaSkyblock getInstance() {

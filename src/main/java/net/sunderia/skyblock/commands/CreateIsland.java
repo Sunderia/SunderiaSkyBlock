@@ -21,7 +21,6 @@ public class CreateIsland extends PluginCommand {
         super(plugin);
     }
 
-
     @Override
     public void onCommand(Player player, String[] args) {
         var loc = new Location(player.getWorld(), 0, 100, 0);
