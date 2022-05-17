@@ -8,9 +8,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class Inventories {
 
-    //public static Inventory TESTGUI = InventoryUtils.fillBorders(new InventoryBuilder("Test Gui", 5).build(), new ItemStack(Material.BLACK_STAINED_GLASS_PANE), 5, false);
-    public static final Inventory TESTGUI = new InventoryBuilder("Test Gui", 5)
-            .onOpen(e -> InventoryUtils.fillBorders(e.getInventory(), new ItemStack(Material.BLACK_STAINED_GLASS_PANE), 5))
+    public static final Inventory TESTGUI = new InventoryBuilder("Test Gui", 6)
+            .onOpen(event -> InventoryUtils.fillRectangle(event.getInventory(), 2, 2, 4, 6, new ItemStack(Material.BLACK_STAINED_GLASS_PANE),true))
             .build();
 
 }

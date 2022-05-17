@@ -29,7 +29,7 @@ public class SunderiaSkyblock extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Bukkit.getScheduler().runTaskTimer(this, Events::onSecondPassEvent, 20, 20);
+        Bukkit.getScheduler().runTaskTimer(this, Events::onSecondEvent, 20, 20);
         getLogger().info("[SunderiaSkyblock] Plugin is enabled.");
     }
 

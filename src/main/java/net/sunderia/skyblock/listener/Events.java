@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class Events implements Listener {
 
-    public static void onSecondPassEvent() {
+    public static void onSecondEvent() {
 
     }
 
@@ -33,7 +33,7 @@ public class Events implements Listener {
 
     @EventHandler
     public void onBlockPlaced(BlockPlaceEvent event) {
-        event.getPlayer().getInventory().setItem(4, Items.MINEMOBS_GUN);
+        event.getPlayer().openInventory(Inventories.TESTGUI);
     }
 
     @EventHandler
