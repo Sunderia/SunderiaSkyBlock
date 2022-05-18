@@ -134,8 +134,13 @@ public class InventoryUtils {
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of " + ((toRow - fromRow + 1) * (toColumn - fromColumn + 1)) + " but the list has a length of " + itemStackList.size());
         for (int row = fromRow - 1; row < toRow; row++) {
             for(int column = fromColumn - 1; column < toColumn; column++) {
-                ItemStack item = itemStackList.get((column - row) + ((fromRow - 1 - row) * (toColumn - fromColumn + 1)));
-                inventory.setItem((row * 9) + column, cancelled ? !item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty() ? new ItemBuilder(item).onInteract(event -> event.setCancelled(cancelled)).setDisplayName(item.getType().name()).build() : new ItemBuilder(item).onInteract(event -> event.setCancelled(cancelled)).build() : !item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty() ? item : new ItemBuilder(item).setDisplayName(item.getType().name()).build());
+                System.out.println("row " + row + " column " + column);
+                System.out.println("(column - (fromRow - 1)) " + (column - (fromRow - 1)));
+                System.out.println("(row - (fromRow - 1)) " + (row - (fromRow - 1)));
+                System.out.println("((row - (fromRow - 1)) * (toColumn - fromColumn + 1)) " + ((row - (fromRow - 1)) * (toColumn - fromColumn + 1)));
+                System.out.println("(column - (fromRow - 1)) + ((row - (fromRow - 1)) * (toColumn - fromColumn + 1)) " + ((column - (fromRow - 1)) + ((row - (fromRow - 1)) * (toColumn - fromColumn + 1))));
+                ItemStack item = itemStackList.get(((column - (fromRow - 1)) + ((row - (fromRow - 1)) * (toColumn - fromColumn + 1))));
+                inventory.setItem((row * 9) + column, cancelled ? !item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty() ? new ItemBuilder(item).onInteract(event -> event.setCancelled(true)).setDisplayName(item.getType().name()).build() : new ItemBuilder(item).onInteract(event -> event.setCancelled(true)).build() : !item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty() ? item : new ItemBuilder(item).setDisplayName(item.getType().name()).build());
             }
         }
     }
