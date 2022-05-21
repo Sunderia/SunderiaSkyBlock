@@ -11,8 +11,16 @@ import java.io.IOException;
 
 public class SunderiaSkyblock extends JavaPlugin {
 
-    private static SunderiaSkyblock instance;
     public static final String header = ChatColor.DARK_GREEN + "[" + ChatColor.GREEN + "SunderiaSkyblock" + ChatColor.DARK_GREEN + "] ";
+    private static SunderiaSkyblock instance;
+
+    public static NamespacedKey getKey(String key) {
+        return new NamespacedKey(getInstance(), key);
+    }
+
+    public static SunderiaSkyblock getInstance() {
+        return instance;
+    }
 
     @Override
     public void onLoad() {
@@ -36,13 +44,5 @@ public class SunderiaSkyblock extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("[SunderiaSkyblock] Plugin is disabled.");
-    }
-
-    public static NamespacedKey getKey(String key) {
-        return new NamespacedKey(getInstance(), key);
-    }
-
-    public static SunderiaSkyblock getInstance() {
-        return instance;
     }
 }

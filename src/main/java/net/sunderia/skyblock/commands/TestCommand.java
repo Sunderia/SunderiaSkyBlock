@@ -3,10 +3,7 @@ package net.sunderia.skyblock.commands;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
 import net.sunderia.skyblock.objects.Inventories;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,6 +21,7 @@ public class TestCommand extends PluginCommand {
 
     @Override
     public void onCommand(@NotNull Player player, @NotNull String[] args) {
+        player.openInventory(Inventories.TEST_GUI);
         getArg(args, 0).ifPresent(s -> {
 
         });

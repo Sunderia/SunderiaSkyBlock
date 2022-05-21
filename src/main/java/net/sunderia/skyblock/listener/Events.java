@@ -1,6 +1,5 @@
 package net.sunderia.skyblock.listener;
 
-import net.sunderia.skyblock.objects.Inventories;
 import net.sunderia.skyblock.objects.Items;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -10,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class Events implements Listener {
@@ -27,13 +27,18 @@ public class Events implements Listener {
     }
 
     @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+
+    }
+
+    @EventHandler
     public void onBlockBroken(BlockBreakEvent event) {
-        event.getPlayer().openInventory(Inventories.TESTGUI);
+
     }
 
     @EventHandler
     public void onBlockPlaced(BlockPlaceEvent event) {
-        event.getPlayer().openInventory(Inventories.TESTGUI);
+
     }
 
     @EventHandler
