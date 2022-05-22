@@ -8,8 +8,15 @@ import org.bukkit.inventory.ItemStack;
 
 public class Inventories {
 
-    public static final Inventory TEST_GUI = new InventoryBuilder("Test Gui", 6).onOpen(event -> {
-        InventoryUtils.fillRectangle(event.getInventory(), 2, 2, 5, 6, new ItemStack(Material.STONE));
-    }).build();
+    public static final Inventory TEST_GUI = new InventoryBuilder("Test Gui", 6)
+            .onOpen(event -> {
+                InventoryUtils.fillAll(event.getInventory(), new ItemStack(Material.BLACK_STAINED_GLASS_PANE), 6);
+                InventoryUtils.fillRow(event.getInventory(), new ItemStack(Material.RED_STAINED_GLASS_PANE), 6);
+                InventoryUtils.fillRectangle(event.getInventory(), new ItemStack(Material.AIR), 2, 2, 4, 4);
+            })
+            .onClick(event -> {
+                if(event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE) event.setCancelled(true);
+            })
+            .build();
 
 }

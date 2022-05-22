@@ -15,29 +15,29 @@ public class SunderiaSkyblock extends JavaPlugin {
     private static SunderiaSkyblock instance;
 
     public static NamespacedKey getKey(String key) {
-        return new NamespacedKey(getInstance(), key);
-    }
-
-    public static SunderiaSkyblock getInstance() {
-        return instance;
-    }
-
-    @Override
-    public void onLoad() {
-        instance = this;
-    }
-
-    @Override
-    public void onEnable() {
-        SunderiaUtils.of(this);
-        this.saveDefaultConfig();
-        try {
-            SunderiaUtils.registerListeners(this.getClass().getPackageName() + ".listener");
-            SunderiaUtils.registerCommands(this.getClass().getPackageName() + ".commands");
-        } catch (IOException e) {
-            e.printStackTrace();
+            return new NamespacedKey(getInstance(), key);
         }
-        Bukkit.getScheduler().runTaskTimer(this, Events::onSecondEvent, 20, 20);
+
+        public static SunderiaSkyblock getInstance() {
+            return instance;
+        }
+
+        @Override
+        public void onLoad() {
+            instance = this;
+        }
+
+        @Override
+        public void onEnable() {
+            SunderiaUtils.of(this);
+            this.saveDefaultConfig();
+            try {
+                SunderiaUtils.registerListeners(this.getClass().getPackageName() + ".listener");
+                SunderiaUtils.registerCommands(this.getClass().getPackageName() + ".commands");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Bukkit.getScheduler().runTaskTimer(this, Events::onSecondEvent, 20, 20);
         getLogger().info("[SunderiaSkyblock] Plugin is enabled.");
     }
 

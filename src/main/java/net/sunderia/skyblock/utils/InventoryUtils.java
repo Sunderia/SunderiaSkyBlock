@@ -94,7 +94,7 @@ public class InventoryUtils {
         }
     }
 
-    public static void fillRectangle(Inventory inventory, int fromRow, int fromColumn, int toRow, int toColumn, List<ItemStack> itemStackList) {
+    public static void fillRectangle(Inventory inventory, List<ItemStack> itemStackList, int fromRow, int fromColumn, int toRow, int toColumn) {
         if (fromRow > 6 || fromRow < 1)
             throw new IllegalArgumentException("The fromRow has to be greater than 0 and lower than 7");
         if (fromColumn > 9 || fromColumn < 1)
@@ -110,13 +110,15 @@ public class InventoryUtils {
         }
     }
 
-    public static void fillRectangle(Inventory inventory, int fromRow, int fromColumn, int toRow, int toColumn, ItemStack itemStack) {
+    public static void fillRectangle(Inventory inventory, ItemStack itemStack, int fromRow, int fromColumn, int toRow, int toColumn) {
         List<ItemStack> itemStackList = new ArrayList<>();
         for (int i = 0; i < ((toRow - fromRow + 1) * (toColumn - fromColumn + 1)); i++) {
             itemStackList.add(itemStack);
         }
-        fillRectangle(inventory, fromRow, fromColumn, toRow, toColumn, itemStackList);
+        fillRectangle(inventory, itemStackList, fromRow, fromColumn, toRow, toColumn);
     }
+
+
 
     public static void clearAll(Inventory inventory, int rows) {
         fillAll(inventory, new ItemStack(Material.AIR), rows);
