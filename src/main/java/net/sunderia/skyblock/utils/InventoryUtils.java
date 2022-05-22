@@ -25,7 +25,7 @@ public class InventoryUtils {
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of" + rows * 9 + "but the list has a length of " + itemStackList.size());
         for (int index = 0; index < rows * 9; index++) {
             ItemStack item = itemStackList.get(index);
-            inventory.setItem(index, !item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty() ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
+            inventory.setItem(index, item.getType() != Material.AIR && (!item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
         }
     }
 
@@ -45,7 +45,7 @@ public class InventoryUtils {
         }
         for (int index = row * 9 - 9; index < row * 9; index++) {
             ItemStack item = itemStackList.get(index - 9 * (row - 1));
-            inventory.setItem(index, !item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty() ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
+            inventory.setItem(index, item.getType() != Material.AIR && (!item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
         }
     }
 
@@ -67,7 +67,7 @@ public class InventoryUtils {
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of " + rows + " but the list has a length of " + itemStackList.size());
         for (int row = 0; row < rows; row++) {
             ItemStack item = itemStackList.get(row);
-            inventory.setItem((row * 9) + column - 1, !item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty() ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
+            inventory.setItem((row * 9) + column - 1, item.getType() != Material.AIR && (!item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
         }
     }
 
@@ -88,8 +88,8 @@ public class InventoryUtils {
         if (rows >= 2) fillRow(inventory, itemStackList.subList(itemStackList.size() - 9, itemStackList.size()), rows);
         if (rows >= 3) {
             for (int row = 1, count = 9; row < rows - 1; row++) {
-                inventory.setItem((row * 9), !itemStackList.get(row + count).hasItemMeta() || itemStackList.get(row + count).getItemMeta().getDisplayName().isEmpty() ? new ItemBuilder(itemStackList.get(row + count)).setDisplayName(itemStackList.get(row + count).getType().name()).build() : itemStackList.get(row + count));
-                inventory.setItem((row * 9) + 8, !itemStackList.get(row + ++count).hasItemMeta() || itemStackList.get(row + count).getItemMeta().getDisplayName().isEmpty() ? new ItemBuilder(itemStackList.get(row + count)).setDisplayName(itemStackList.get(count + row).getType().name()).build() : itemStackList.get(row + count));
+                inventory.setItem((row * 9), itemStackList.get(row + count).getType() != Material.AIR && (!itemStackList.get(row + count).hasItemMeta() || itemStackList.get(row + count).getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(itemStackList.get(row + count)).setDisplayName(itemStackList.get(row + count).getType().name()).build() : itemStackList.get(row + count));
+                inventory.setItem((row * 9) + 8, itemStackList.get(row + ++count).getType() != Material.AIR && (!itemStackList.get(row + count).hasItemMeta() || itemStackList.get(row + count).getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(itemStackList.get(row + count)).setDisplayName(itemStackList.get(count + row).getType().name()).build() : itemStackList.get(row + count));
             }
         }
     }
@@ -105,7 +105,7 @@ public class InventoryUtils {
             for (int column = fromColumn - 1; column < toColumn; column++) {
                 System.out.println(row + "<- row   column ->" + column);
                 ItemStack item = itemStackList.get((column - fromRow + 1 + (row - fromRow + 1) * (toColumn - fromColumn + 1)));
-                inventory.setItem((row * 9) + column, !item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty() ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
+                inventory.setItem((row * 9) + column, item.getType() != Material.AIR && (!item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
             }
         }
     }
@@ -118,7 +118,13 @@ public class InventoryUtils {
         fillRectangle(inventory, itemStackList, fromRow, fromColumn, toRow, toColumn);
     }
 
-
+    public static void setSlot(Inventory inventory, ItemStack itemStack, int row, int column) {
+        if (row > 6 || row < 1)
+            throw new IllegalArgumentException("The row has to be greater than 0 and lower than 7");
+        if (column > 9 || column < 1)
+            throw new IllegalArgumentException("The column has to be greater than 0 and lower than 10");
+        inventory.setItem(row * 9 - 10 + column, itemStack.getType() != Material.AIR && (!itemStack.hasItemMeta() || itemStack.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(itemStack).setDisplayName(itemStack.getType().name()).build() : itemStack);
+    }
 
     public static void clearAll(Inventory inventory, int rows) {
         fillAll(inventory, new ItemStack(Material.AIR), rows);
