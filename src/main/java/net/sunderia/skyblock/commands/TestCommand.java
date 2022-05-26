@@ -21,7 +21,7 @@ public class TestCommand extends PluginCommand {
 
     @Override
     public void onCommand(@NotNull Player player, @NotNull String[] args) {
-        player.openInventory(Inventories.TEST_GUI);
+        player.openInventory(Inventories.CRAFTING_GUI);
         getArg(args, 0).ifPresent(s -> {
 
         });

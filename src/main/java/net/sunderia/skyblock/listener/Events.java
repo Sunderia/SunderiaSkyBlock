@@ -1,13 +1,14 @@
 package net.sunderia.skyblock.listener;
 
+import net.sunderia.skyblock.objects.Inventories;
 import net.sunderia.skyblock.objects.Items;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -28,17 +29,10 @@ public class Events implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-
-    }
-
-    @EventHandler
-    public void onBlockBroken(BlockBreakEvent event) {
-
-    }
-
-    @EventHandler
-    public void onBlockPlaced(BlockPlaceEvent event) {
-
+        if(event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.CRAFTING_TABLE && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            event.setCancelled(true);
+            event.getPlayer().openInventory(Inventories.CRAFTING_GUI);
+        }
     }
 
     @EventHandler

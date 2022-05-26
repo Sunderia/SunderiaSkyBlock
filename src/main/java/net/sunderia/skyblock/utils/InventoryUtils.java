@@ -103,7 +103,6 @@ public class InventoryUtils {
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of " + ((toRow - fromRow + 1) * (toColumn - fromColumn + 1)) + " but the list has a length of " + itemStackList.size());
         for (int row = fromRow - 1; row < toRow; row++) {
             for (int column = fromColumn - 1; column < toColumn; column++) {
-                System.out.println(row + "<- row   column ->" + column);
                 ItemStack item = itemStackList.get((column - fromRow + 1 + (row - fromRow + 1) * (toColumn - fromColumn + 1)));
                 inventory.setItem((row * 9) + column, item.getType() != Material.AIR && (!item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
             }
