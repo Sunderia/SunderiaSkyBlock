@@ -37,32 +37,31 @@ public class Inventories {
                 Iterator<Recipe> sourceRecipes = Bukkit.recipeIterator();
                 List<ItemStack> specifiedIngredients = new ArrayList<>();
                 List.of(10, 11, 12, 19, 20, 21, 28, 29, 30).forEach(index -> specifiedIngredients.add(event.getInventory().getItem(index) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(index)));
-                boolean craftable = false;
                 while (sourceRecipes.hasNext()) {
-                    if (sourceRecipes.next() instanceof ShapedRecipe shapedRecipe) {
-                        if (Arrays.stream(shapedRecipe.getIngredientMap().values().toArray()).anyMatch(Objects::nonNull)) {
-                            List<ItemStack> neededIngredients = new ArrayList<>();
-                            System.out.println(shapedRecipe.getIngredientMap());
-                            shapedRecipe.getIngredientMap().values().forEach(itemStack -> neededIngredients.add(itemStack == null ? new ItemStack(Material.AIR) : itemStack));
-                            for (int index = 0; index < shapedRecipe.getIngredientMap().size(); index++) {
-                                System.out.println("result " + shapedRecipe.getResult());
-                                System.out.println("specified item " + specifiedIngredients.get(index));
-                                System.out.println("needed item " + neededIngredients.get(index));
-                                if (!specifiedIngredients.get(index).isSimilar(neededIngredients.get(index))) {
-                                    craftable = false;
-                                    break;
-                                } else
-                                    craftable = true;
-                            }
-                            System.out.println(craftable);
-                            if (craftable) {
-                                InventoryUtils.setSlot(event.getInventory(), shapedRecipe.getResult(), 3, 6);
-                                break;
-                            } else InventoryUtils.setSlot(event.getInventory(), new ItemBuilder(Material.BARRIER).setDisplayName("No Craft").build(), 3, 6);
-                        }
+                    if(sourceRecipes.next() instanceof ShapedRecipe recipe && craftShapedRecipe(recipe, specifiedIngredients, event.getInventory())) {
+                        break;
                     }
                 }
             }, 10, 10)
             .build();
+
+
+    private static boolean craftShapedRecipe(ShapedRecipe recipe, List<ItemStack> specifiedIngredients, Inventory inventory) {
+        boolean craftable = false;
+        if (Arrays.stream(recipe.getIngredientMap().values().toArray()).anyMatch(Objects::nonNull)) {
+            List<ItemStack> neededIngredients = new ArrayList<>();
+            recipe.getIngredientMap().values().forEach(itemStack -> neededIngredients.add(itemStack == null ? new ItemStack(Material.AIR) : itemStack));
+            for (int index = 0; index < recipe.getIngredientMap().size(); index++) {
+                if (!specifiedIngredients.get(index).isSimilar(neededIngredients.get(index))) {
+                    craftable = false;
+                    break;
+                } else craftable = true;
+            }
+            if (craftable) {
+                InventoryUtils.setSlot(inventory, recipe.getResult(), 3, 6);
+            } else InventoryUtils.setSlot(inventory, new ItemBuilder(Material.BARRIER).setDisplayName("No Craft").build(), 3, 6);
+        }
+        return craftable;
+    }
 
 }
