@@ -2,6 +2,7 @@ package net.sunderia.skyblock.objects;
 
 import fr.sunderia.sunderiautils.utils.InventoryBuilder;
 import fr.sunderia.sunderiautils.utils.ItemBuilder;
+import fr.sunderia.sunderiautils.utils.ItemStackUtils;
 import net.sunderia.skyblock.utils.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -52,7 +53,7 @@ public class Inventories {
             List<ItemStack> neededIngredients = new ArrayList<>();
             recipe.getIngredientMap().values().forEach(itemStack -> neededIngredients.add(itemStack == null ? new ItemStack(Material.AIR) : itemStack));
             for (int index = 0; index < recipe.getIngredientMap().size(); index++) {
-                if (!specifiedIngredients.get(index).isSimilar(neededIngredients.get(index))) {
+                if (!ItemStackUtils.isSimilar(specifiedIngredients.get(index), neededIngredients.get(index))) {
                     craftable = false;
                     break;
                 } else craftable = true;
