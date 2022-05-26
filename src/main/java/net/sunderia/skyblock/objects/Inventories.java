@@ -62,7 +62,7 @@ public class Inventories {
                         }
                     }
                 }
-            }, 20, 20)
+            }, 10, 10)
             .build();
 
 }
