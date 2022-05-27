@@ -10,6 +10,8 @@ import java.util.List;
 
 public class InventoryUtils {
 
+    private InventoryUtils() {}
+
     public static void fillAll(Inventory inventory, ItemStack itemStack, int rows) {
         List<ItemStack> itemStackList = new ArrayList<>();
         for (int i = 0; i < rows * 9; i++) {
@@ -24,8 +26,7 @@ public class InventoryUtils {
         if (itemStackList.size() != rows * 9)
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of" + rows * 9 + "but the list has a length of " + itemStackList.size());
         for (int index = 0; index < rows * 9; index++) {
-            ItemStack item = itemStackList.get(index);
-            inventory.setItem(index, item.getType() != Material.AIR && (!item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
+            inventory.setItem(index, itemStackList.get(index));
         }
     }
 
@@ -44,8 +45,7 @@ public class InventoryUtils {
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of 9 but the list has a length of " + itemStackList.size());
         }
         for (int index = row * 9 - 9; index < row * 9; index++) {
-            ItemStack item = itemStackList.get(index - 9 * (row - 1));
-            inventory.setItem(index, item.getType() != Material.AIR && (!item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
+            inventory.setItem(index, itemStackList.get(index - 9 * (row - 1)));
         }
     }
 
@@ -58,7 +58,6 @@ public class InventoryUtils {
     }
 
     public static void fillColumn(Inventory inventory, List<ItemStack> itemStackList, int rows, int column) {
-        var e = List.of(inventory.getContents());
         if (rows > 6 || rows < 1)
             throw new IllegalArgumentException("The rows has to be greater than 0 and lower than 7");
         if (column > 9 || column < 1)
@@ -66,8 +65,7 @@ public class InventoryUtils {
         if (itemStackList.size() != rows)
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of " + rows + " but the list has a length of " + itemStackList.size());
         for (int row = 0; row < rows; row++) {
-            ItemStack item = itemStackList.get(row);
-            inventory.setItem((row * 9) + column - 1, item.getType() != Material.AIR && (!item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
+            inventory.setItem((row * 9) + column - 1, itemStackList.get(row));
         }
     }
 
@@ -103,8 +101,7 @@ public class InventoryUtils {
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of " + ((toRow - fromRow + 1) * (toColumn - fromColumn + 1)) + " but the list has a length of " + itemStackList.size());
         for (int row = fromRow - 1; row < toRow; row++) {
             for (int column = fromColumn - 1; column < toColumn; column++) {
-                ItemStack item = itemStackList.get((column - fromRow + 1 + (row - fromRow + 1) * (toColumn - fromColumn + 1)));
-                inventory.setItem((row * 9) + column, item.getType() != Material.AIR && (!item.hasItemMeta() || item.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(item).setDisplayName(item.getType().name()).build() : item);
+                inventory.setItem((row * 9) + column, itemStackList.get((column - fromRow + 1 + (row - fromRow + 1) * (toColumn - fromColumn + 1))));
             }
         }
     }
@@ -118,15 +115,12 @@ public class InventoryUtils {
     }
 
     public static void setSlot(Inventory inventory, ItemStack itemStack, int row, int column) {
-        if (row > 6 || row < 1)
-            throw new IllegalArgumentException("The row has to be greater than 0 and lower than 7");
-        if (column > 9 || column < 1)
-            throw new IllegalArgumentException("The column has to be greater than 0 and lower than 10");
-        inventory.setItem(row * 9 - 10 + column, itemStack.getType() != Material.AIR && (!itemStack.hasItemMeta() || itemStack.getItemMeta().getDisplayName().isEmpty()) ? new ItemBuilder(itemStack).setDisplayName(itemStack.getType().name()).build() : itemStack);
+        if (row > 6 || row < 1) throw new IllegalArgumentException("The row has to be greater than 0 and lower than 7");
+        if (column > 9 || column < 1) throw new IllegalArgumentException("The column has to be greater than 0 and lower than 10");
+        inventory.setItem(row * 9 - 10 + column, itemStack);
     }
 
     public static void clearAll(Inventory inventory, int rows) {
         fillAll(inventory, new ItemStack(Material.AIR), rows);
     }
-
 }
