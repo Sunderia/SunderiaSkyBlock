@@ -102,7 +102,7 @@ public class InventoryUtils {
             throw new ArrayIndexOutOfBoundsException("The ItemStack list should have a length of " + ((toRow - fromRow + 1) * (toColumn - fromColumn + 1)) + " but the list has a length of " + itemStackList.size());
         for (int row = fromRow - 1; row < toRow; row++) {
             for (int column = fromColumn - 1; column < toColumn; column++) {
-                inventory.setItem((row * 9) + column, itemStackList.get((column - fromRow + 1 + (row - fromRow + 1) * (toColumn - fromColumn + 1))));
+                inventory.setItem((row * 9) + column, itemStackList.get((row - fromRow + 1 + (row - fromRow + 1) * (toColumn - fromColumn + 1))));
             }
         }
     }
@@ -122,11 +122,18 @@ public class InventoryUtils {
         inventory.setItem(row * 9 - 10 + column, itemStack);
     }
 
-    public static ItemStack getItem(Inventory inventory, ItemStack itemStack, int row, int column) {
+    public static ItemStack getItem(Inventory inventory, int row, int column) {
         if (row > 6 || row < 1) throw new IllegalArgumentException("The row has to be greater than 0 and lower than 7");
         if (column > 9 || column < 1)
             throw new IllegalArgumentException("The column has to be greater than 0 and lower than 10");
         return inventory.getItem(row * 9 - 10 + column);
+    }
+
+    public static boolean isSameSlot(int slot, int row, int column) {
+        if (row > 6 || row < 1) throw new IllegalArgumentException("The row has to be greater than 0 and lower than 7");
+        if (column > 9 || column < 1)
+            throw new IllegalArgumentException("The column has to be greater than 0 and lower than 10");
+        return row * 9 - 10 + column == slot;
     }
 
     public static void clearAll(Inventory inventory, int rows) {
