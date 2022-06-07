@@ -11,34 +11,6 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class Inventories {
-
-    /*public static final Inventory CRAFTING_GUI = new InventoryBuilder("Test Gui", 6)
-            .onOpen(event -> {
-                InventoryUtils.fillAll(event.getInventory(), new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName(" ").build(), 6);
-                InventoryUtils.fillRow(event.getInventory(), new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").build(), 6);
-                InventoryUtils.fillRectangle(event.getInventory(), new ItemStack(Material.AIR), 2, 2, 4, 4);
-                InventoryUtils.setSlot(event.getInventory(), new ItemBuilder(Material.BARRIER).setDisplayName("No Craft").build(), 3, 6);
-                InventoryUtils.setSlot(event.getInventory(), new ItemBuilder(Material.BARRIER).setDisplayName("Exit").build(), 6, 5);
-            })
-            .onClick(event -> {
-                if (event.getCurrentItem() != null && (event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE || event.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE || event.getCurrentItem().getType() == Material.BARRIER))
-                    event.setCancelled(true);
-                if (event.getSlot() == 23 && event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.BARRIER)
-                    Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30).map(i -> event.getInventory().getItem(i)).filter(Objects::nonNull).forEach(is -> is.setAmount(is.getAmount() - 1));
-            })
-            .onUpdate(event -> {
-                if (event.getInventory().getItem(23) == null || event.getInventory().getItem(23).getType() == Material.AIR)
-                    event.getInventory().setItem(23, new ItemBuilder(Material.BARRIER).setDisplayName("No Craft").build());
-                Iterator<Recipe> sourceRecipes = Bukkit.recipeIterator();
-                List<ItemStack> specifiedIngredients = Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30).map(i -> event.getInventory().getItem(i) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(i)).toList();
-                while (sourceRecipes.hasNext()) {
-                    Recipe recipe = sourceRecipes.next();
-                    if((recipe instanceof ShapedRecipe shapedRecipe && craftShapedRecipe(shapedRecipe, specifiedIngredients, event.getInventory())) || (recipe instanceof ShapelessRecipe shapelessRecipe && craftShapelessRecipe(shapelessRecipe, specifiedIngredients, event.getInventory())))
-                        break;
-                }
-            }, 10, 10)
-            .build();*/
-
     public static final Inventory CRAFTING_GUI = new InventoryBuilder("Test Gui", new InventoryBuilder.Shape("""
             BBBBBBBBB
             B   BBBBB
@@ -51,26 +23,34 @@ public class Inventories {
             'N', new ItemBuilder(Material.BARRIER).setDisplayName("No Craft").build(),
             'E', new ItemBuilder(Material.BARRIER).setDisplayName("Exit").build())))
             .onClick(event -> {
-                if (event.getCurrentItem() != null && (event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE || event.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE || event.getCurrentItem().getType() == Material.BARRIER))
+                /*
+                First part : Verify if the clicked item isn't null and if the clicked item is a black stained glass pane, a green stained glass pane, a red stained glass pane or a barrier
+                Second part : Verify if the ingredients are still well placed while the recipe's result is already set in the result slot (24th slot)
+                 */
+                if(InventoryUtils.isSameSlot(event.getSlot(), 6, 5) && InventoryUtils.getItem(event.getInventory(), 6, 5) != null && InventoryUtils.getItem(event.getInventory(), 6, 5).isSimilar(new ItemBuilder(Material.BARRIER).setDisplayName("Exit").build()))
+                    event.getWhoClicked().closeInventory();
+                int[][] craftingSlots = new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}};
+                List<List<ItemStack>> specifiedIngredients = Stream.of(0, 1, 2).map(x -> Stream.of(0, 1, 2).map(y -> event.getInventory().getItem(craftingSlots[x][y]) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(craftingSlots[x][y])).toList()).toList();
+                if (event.getCurrentItem() != null && (((event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE || event.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE || event.getCurrentItem().getType() == Material.BARRIER)) || (InventoryUtils.getItem(event.getInventory(), 3, 6).getType() != Material.BARRIER && (Bukkit.getRecipesFor(InventoryUtils.getItem(event.getInventory(), 3, 6)).stream().filter(recipe -> recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe).findFirst().get() instanceof ShapedRecipe recipe ? !craftShapedRecipe(event.getInventory(), recipe, specifiedIngredients) : !craftShapelessRecipe(event.getInventory(), (ShapelessRecipe) Bukkit.getRecipesFor(InventoryUtils.getItem(event.getInventory(), 3, 6)).stream().filter(recipe -> recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe).findFirst().get(), specifiedIngredients)))))
                     event.setCancelled(true);
-                if (event.getSlot() == 23 && event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.BARRIER)
+                if (InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.BARRIER)
                     Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30).map(i -> event.getInventory().getItem(i)).filter(Objects::nonNull).forEach(is -> is.setAmount(is.getAmount() - 1));
             })
             .onUpdate(event -> {
-                if (event.getInventory().getItem(23) == null || event.getInventory().getItem(23).getType() == Material.AIR)
-                    event.getInventory().setItem(23, new ItemBuilder(Material.BARRIER).setDisplayName("No Craft").build());
+                if (InventoryUtils.getItem(event.getInventory(), 3, 6) == null || InventoryUtils.getItem(event.getInventory(), 3, 6).getType() == Material.AIR)
+                    InventoryUtils.setItem(event.getInventory(), new ItemBuilder(Material.BARRIER).setDisplayName("Recipe excepted").build(), 3, 6);
                 Iterator<Recipe> sourceRecipes = Bukkit.recipeIterator();
                 int[][] craftingSlots = new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}};
                 List<List<ItemStack>> specifiedIngredients = Stream.of(0, 1, 2).map(x -> Stream.of(0, 1, 2).map(y -> event.getInventory().getItem(craftingSlots[x][y]) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(craftingSlots[x][y])).toList()).toList();
                 while (sourceRecipes.hasNext()) {
                     Recipe recipe = sourceRecipes.next();
-                    if ((recipe instanceof ShapedRecipe shapedRecipe && craftShapedRecipe(shapedRecipe, specifiedIngredients, event.getInventory())) || (recipe instanceof ShapelessRecipe shapelessRecipe && craftShapelessRecipe(shapelessRecipe, specifiedIngredients, event.getInventory())))
+                    if ((recipe instanceof ShapedRecipe shapedRecipe && craftShapedRecipe(event.getInventory(), shapedRecipe, specifiedIngredients)) || (recipe instanceof ShapelessRecipe shapelessRecipe && craftShapelessRecipe(event.getInventory(), shapelessRecipe, specifiedIngredients)))
                         break;
                 }
             }, 10, 10)
             .build();
 
-    private static boolean craftShapedRecipe(ShapedRecipe shapedRecipe, List<List<ItemStack>> specifiedIngredients, Inventory inventory) {
+    private static boolean craftShapedRecipe(Inventory inventory, ShapedRecipe shapedRecipe, List<List<ItemStack>> specifiedIngredients) {
         boolean craftable = false;
         int coordinateX = 0;
         int coordinateY = 0;
@@ -118,10 +98,12 @@ public class Inventories {
                 break;
         }
         InventoryUtils.setItem(inventory, craftable ? shapedRecipe.getResult() : new ItemBuilder(Material.BARRIER).setDisplayName("No Craft").build(), 3, 6);
+        InventoryUtils.fillRectangle(inventory, craftable ? new ItemStack(Material.GREEN_STAINED_GLASS_PANE) : new ItemStack(Material.RED_STAINED_GLASS_PANE), 6, 1, 6, 4);
+        InventoryUtils.fillRectangle(inventory, craftable ? new ItemStack(Material.GREEN_STAINED_GLASS_PANE) : new ItemStack(Material.RED_STAINED_GLASS_PANE), 6, 6, 6, 9);
         return craftable;
     }
 
-    private static boolean craftShapelessRecipe(ShapelessRecipe shapelessRecipe, List<List<ItemStack>> specifiedIngredients, Inventory inventory) {
+    private static boolean craftShapelessRecipe(Inventory inventory, ShapelessRecipe shapelessRecipe, List<List<ItemStack>> specifiedIngredients) {
         boolean craftable = false;
 
         return craftable;
