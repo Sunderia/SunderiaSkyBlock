@@ -10,7 +10,8 @@ import java.util.List;
 
 public class InventoryUtils {
 
-    private InventoryUtils() {}
+    private InventoryUtils() {
+    }
 
     public static void fillAll(Inventory inventory, ItemStack itemStack, int rows) {
         List<ItemStack> itemStackList = new ArrayList<>();
@@ -114,10 +115,18 @@ public class InventoryUtils {
         fillRectangle(inventory, itemStackList, fromRow, fromColumn, toRow, toColumn);
     }
 
-    public static void setSlot(Inventory inventory, ItemStack itemStack, int row, int column) {
+    public static void setItem(Inventory inventory, ItemStack itemStack, int row, int column) {
         if (row > 6 || row < 1) throw new IllegalArgumentException("The row has to be greater than 0 and lower than 7");
-        if (column > 9 || column < 1) throw new IllegalArgumentException("The column has to be greater than 0 and lower than 10");
+        if (column > 9 || column < 1)
+            throw new IllegalArgumentException("The column has to be greater than 0 and lower than 10");
         inventory.setItem(row * 9 - 10 + column, itemStack);
+    }
+
+    public static ItemStack getItem(Inventory inventory, ItemStack itemStack, int row, int column) {
+        if (row > 6 || row < 1) throw new IllegalArgumentException("The row has to be greater than 0 and lower than 7");
+        if (column > 9 || column < 1)
+            throw new IllegalArgumentException("The column has to be greater than 0 and lower than 10");
+        return inventory.getItem(row * 9 - 10 + column);
     }
 
     public static void clearAll(Inventory inventory, int rows) {

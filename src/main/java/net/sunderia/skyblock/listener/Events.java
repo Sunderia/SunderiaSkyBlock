@@ -29,7 +29,7 @@ public class Events implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if(event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.CRAFTING_TABLE && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.CRAFTING_TABLE && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             event.setCancelled(true);
             event.getPlayer().openInventory(Inventories.CRAFTING_GUI);
         }
