@@ -131,8 +131,7 @@ public class Inventories {
 
     private static int getAmount(Recipe r, ItemStack is) {
         if(r instanceof ShapelessRecipe recipe) {
-            //TODO: Implement
-            return 1;
+            return recipe.getIngredientList().stream().filter(stack -> ItemStackUtils.isSimilar(stack, is)).findFirst().orElse(new ItemStack(Material.AIR)).getAmount();
         } else if(r instanceof ShapedRecipe recipe) {
             return recipe.getIngredientMap().values().stream().filter(stack -> ItemStackUtils.isSimilar(stack, is)).findFirst().orElse(new ItemStack(Material.AIR)).getAmount();
         }
