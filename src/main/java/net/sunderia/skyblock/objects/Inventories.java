@@ -9,9 +9,13 @@ import org.bukkit.Material;
 import org.bukkit.inventory.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 public class Inventories {
+
+    private Inventories() {}
+
     public static final Inventory CRAFTING_GUI = new InventoryBuilder("Test Gui", new InventoryBuilder.Shape("""
             BBBBBBBBB
             B   BBBBB
@@ -107,10 +111,22 @@ public class Inventories {
         return craftable;
     }
 
-    private static boolean craftShapelessRecipe(Inventory inventory, ShapelessRecipe shapelessRecipe, List<List<ItemStack>> specifiedIngredients) {
-        boolean craftable = false;
-
-        return craftable;
+    private static boolean craftShapelessRecipe(Inventory inventory, ShapelessRecipe recipe, List<List<ItemStack>> ing) {
+        AtomicBoolean craftable = new AtomicBoolean(false);
+        List<ItemStack> ingredients = new ArrayList<>(ing.stream().flatMap(List::stream).filter(ItemStackUtils::isNotAirNorNull).toList());
+        List<ItemStack> recipeIngredients = new ArrayList<>(recipe.getIngredientList());
+        if(ingredients.isEmpty() || recipe.getIngredientList().size() != ingredients.size())
+            craftable.set(false);
+        else {
+            for (ItemStack ingredient : ingredients) {
+                recipeIngredients.removeIf(is -> is.isSimilar(ingredient));
+            }
+            craftable.set(recipeIngredients.isEmpty());
+        }
+        InventoryUtils.setItem(inventory, craftable.get() ? recipe.getResult() : new ItemBuilder(Material.BARRIER).setDisplayName("No Craft").build(), 3, 6);
+        InventoryUtils.fillRectangle(inventory, new ItemStack(craftable.get() ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE), 6, 1, 6, 4);
+        InventoryUtils.fillRectangle(inventory, new ItemStack(craftable.get() ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE), 6, 6, 6, 9);
+        return craftable.get();
     }
 
     private static int getAmount(Recipe r, ItemStack is) {
