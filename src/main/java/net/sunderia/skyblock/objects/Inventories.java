@@ -41,10 +41,10 @@ public class Inventories {
             B   BBBBB
             BBBBBBBBB
             RRRRERRRR
-            """, Map.of('B', new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(),
-            'R', new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(),
-            'N', new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").hideIdentifier().build(),
-            'E', new ItemBuilder(Material.BARRIER).setDisplayName("Exit").hideIdentifier().build())))
+            """, Map.of('B', new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName(" ").build(),
+            'R', new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").build(),
+            'N', new ItemBuilder(Material.BARRIER).setDisplayName("No Craft").build(),
+            'E', new ItemBuilder(Material.BARRIER).setDisplayName("Exit").build())))
             .onClick(event -> {
                 if (event.getCurrentItem() != null && (InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && event.getCurrentItem().getType().isAir()))
                     return;
@@ -179,9 +179,69 @@ public class Inventories {
                             }
                         }
                     } else {
-                        Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30).map(i -> event.getInventory().getItem(i))
-                                .filter(Objects::nonNull).forEach(is -> is.setAmount(is.getAmount() - getAmount(Bukkit.getRecipesFor(event.getCurrentItem()).stream()
-                                        .filter(recipe -> recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe).findFirst().get(), is)));
+                        if (Bukkit.getRecipesFor(event.getCurrentItem()).stream().filter(recipe -> (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) && (Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30)
+                                .map(slot -> event.getInventory().getItem(slot) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(slot))
+                                .anyMatch(specifiedIngredient -> (recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getIngredientMap().values() : ((ShapelessRecipe) recipe).getIngredientList())
+                                        .stream()
+                                        .anyMatch(ingredient -> ItemStackUtils.isSameItem(ingredient, specifiedIngredient))))).findFirst().get() instanceof ShapelessRecipe shapelessRecipe) {
+                            //Decrease amount of specified ingredients
+                            List<ItemStack> ingredientList = shapelessRecipe.getIngredientList();
+                            List<ItemStack> specifiedIngredients = new ArrayList<>(Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30).map(slot -> event.getInventory().getItem(slot))
+                                    .filter(Objects::nonNull)
+                                    .toList());
+                            for (int j = 0; j < shapelessRecipe.getIngredientList().size(); j++) {
+                                ItemStack item = specifiedIngredients.stream()
+                                        .findFirst()
+                                        .get();
+                                ItemStack sameIngredient = ingredientList.stream()
+                                        .filter(ingredient -> ItemStackUtils.isSameItem(ingredient, item))
+                                        .findFirst()
+                                        .get();
+                                item.setAmount(item.getAmount() - sameIngredient.getAmount());
+                                ingredientList.remove(sameIngredient);
+                                specifiedIngredients.remove(item);
+                            }
+                        } else if (Bukkit.getRecipesFor(event.getCurrentItem()).stream().filter(recipe -> (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) && (Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30)
+                                .map(slot -> event.getInventory().getItem(slot) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(slot))
+                                .anyMatch(specifiedIngredient -> (recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getIngredientMap().values() : ((ShapelessRecipe) recipe).getIngredientList())
+                                        .stream()
+                                        .anyMatch(ingredient -> ItemStackUtils.isSameItem(ingredient, specifiedIngredient))))).findFirst().get() instanceof ShapedRecipe shapedRecipe) {
+                            int coordinateX = 0;
+                            int coordinateY = 0;
+                            int possiblePos = switch (shapedRecipe.getShape().length * shapedRecipe.getShape()[0].length()) {
+                                case 2 -> 6;
+                                case 6 -> 2;
+                                case 3 -> 3;
+                                case 4 -> 4;
+                                case 9 -> 1;
+                                default ->
+                                        throw new IllegalStateException("Unexpected value: " + shapedRecipe.getShape().length * shapedRecipe.getShape()[0].length());
+                            };
+                            List<ItemStack[][]> positions = new ArrayList<>(possiblePos);
+                            for (int i = 0; i < possiblePos; i++) {
+                                ItemStack[][] position = new ItemStack[][]{new ItemStack[3], new ItemStack[3], new ItemStack[3]};
+                                for (int y = 0; y < shapedRecipe.getShape().length; y++) {
+                                    for (int x = 0; x < shapedRecipe.getShape()[0].length(); x++) {
+                                        position[y + coordinateY][x + coordinateX] = shapedRecipe.getIngredientMap().get(shapedRecipe.getShape()[y].charAt(x));
+                                    }
+                                }
+                                positions.add(Arrays.stream(position).map(y -> Arrays.stream(y).map(x -> x == null ? new ItemStack(Material.AIR) : x).toArray(ItemStack[]::new)).toArray(ItemStack[][]::new));
+                                if (coordinateX + 1 > 3 - shapedRecipe.getShape()[0].length()) {
+                                    coordinateX = 0;
+                                    coordinateY++;
+                                } else coordinateX++;
+                            }
+                            for (int y = 0; y < 3; y++) {
+                                for (int x = 0; x < 3; x++) {
+                                    if (ItemStackUtils.isNotAirNorNull(event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[y][x])))
+                                        event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[y][x]).setAmount(event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[y][x]).getAmount() -
+                                                positions.stream()
+                                                        .filter(position -> Arrays.stream(position).anyMatch(row -> row[0] != null))
+                                                        .findFirst()
+                                                        .get()[y][x].getAmount());
+                                }
+                            }
+                        }
                         if (ItemStackUtils.isSameItem(event.getCursor(), event.getCurrentItem()))
                             event.getCursor().setAmount(event.getCursor().getAmount() + event.getCurrentItem().getAmount());
                     }
