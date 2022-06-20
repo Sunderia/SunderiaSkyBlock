@@ -33,6 +33,7 @@ public class Inventories {
                 }
             }, 20, 20)
             .build();
+
     public static final Inventory CRAFTING_GUI = new InventoryBuilder("Crafting Table", new InventoryBuilder.Shape("""
             BBBBBBBBB
             B   BBBBB
@@ -277,8 +278,13 @@ public class Inventories {
         return false;
     }
 
-    private static int getAmount(Recipe recipe, ItemStack is) {
-        System.out.println(recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getIngredientMap() : ((ShapelessRecipe) recipe).getIngredientList());
-        return recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getIngredientMap().values().stream().filter(stack -> ItemStackUtils.isSameItem(stack, is)).findFirst().orElse(new ItemStack(Material.AIR)).getAmount() : ((ShapelessRecipe) recipe).getIngredientList().stream().filter(stack -> ItemStackUtils.isSameItem(stack, is)).findFirst().orElse(new ItemStack(Material.AIR)).getAmount();
+    private static int getAmount(Recipe r, ItemStack is) {
+        if(r instanceof ShapelessRecipe recipe) {
+            //TODO: Implement
+            return 1;
+        } else if(r instanceof ShapedRecipe recipe) {
+            return recipe.getIngredientMap().values().stream().filter(stack -> ItemStackUtils.isSimilar(stack, is)).findFirst().orElse(new ItemStack(Material.AIR)).getAmount();
+        }
+        return 1;
     }
 }
