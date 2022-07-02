@@ -62,9 +62,9 @@ public class Inventories {
                         (event.getCurrentItem().getType() == Material.GREEN_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().equals(" ")) ||
                         (event.getCurrentItem().getType() == Material.BARRIER && event.getCurrentItem().hasItemMeta() && (event.getCurrentItem().getItemMeta().getDisplayName().equals("Recipe expected") || event.getCurrentItem().getItemMeta().getDisplayName().equals("Exit"))))) ||
                         (InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && ((ItemStackUtils.isNotAirNorNull(event.getCursor()) &&
-                                ItemStackUtils.isSameItem(event.getCursor(), InventoryUtils.getItem(event.getInventory(), 3, 6)))))))
+                                ItemStackUtils.isSameItem(event.getCursor(), InventoryUtils.getItem(event.getInventory(), 3, 6))) || event.isRightClick()))))
                     event.setCancelled(true);
-                if (InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && ItemStackUtils.isNotAirNorNull(event.getCurrentItem()) && !(event.getClickedInventory() instanceof PlayerInventory) && (!event.getCurrentItem().hasItemMeta() || !event.getCurrentItem().getItemMeta().getDisplayName().equals("Recipe expected")) && (event.getCursor().getType().isAir() || ItemStackUtils.isSameItem(event.getCursor(), InventoryUtils.getItem(event.getInventory(), 3, 6))) && event.getCursor().getAmount() + event.getCurrentItem().getAmount() <= 64) {
+                if (InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && event.isLeftClick() && ItemStackUtils.isNotAirNorNull(event.getCurrentItem()) && !(event.getClickedInventory() instanceof PlayerInventory) && (!event.getCurrentItem().hasItemMeta() || !event.getCurrentItem().getItemMeta().getDisplayName().equals("Recipe expected")) && (event.getCursor().getType().isAir() || ItemStackUtils.isSameItem(event.getCursor(), InventoryUtils.getItem(event.getInventory(), 3, 6))) && event.getCursor().getAmount() + event.getCurrentItem().getAmount() <= 64) {
                     if (event.isShiftClick()) {
                         event.setCancelled(true);
                         int possibleCrafts;
@@ -303,11 +303,16 @@ public class Inventories {
                 } else coordinateX++;
             }
             for (ItemStack[][] position : positions) {
+                int count = 0;
                 for (int y = 0; y < 3; y++) {
                     for (int x = 0; x < 3; x++) {
-                        if ((ItemStackUtils.isSameItem(position[y][x], specifiedIngredients.get(y).get(x)) || (position[y][x].getType().isAir() && specifiedIngredients.get(y).get(x).getType().isAir())) && specifiedIngredients.get(y).get(x).getAmount() >= position[y][x].getAmount())
+                        //Verify if the specifiedIngredient's amount is higher or equal to positionIngredient's amount and ((if the count's char's choice map isn't null and if the count's char's choice map contains the specifiedIngredient) or if the specifiedIngredient is same as the positionIngredient or if the specifiedIngredient/positionIngredient are both null)
+                        if (((shapedRecipe.getChoiceMap().get("abcdefghi".charAt(count)) != null && shapedRecipe.getChoiceMap().get("abcdefghi".charAt(count)).test(specifiedIngredients.get(y).get(x))) || ItemStackUtils.isSameItem(position[y][x], specifiedIngredients.get(y).get(x)) || (position[y][x].getType().isAir() && specifiedIngredients.get(y).get(x).getType().isAir())) && specifiedIngredients.get(y).get(x).getAmount() >= position[y][x].getAmount()) {
                             craftable = true;
-                        else {
+                            //The variable count is updated everytime if the positionIngredient isn't null, used for getting the choice map for verification
+                            if(ItemStackUtils.isNotAirNorNull(position[y][x]))
+                                count++;
+                        } else {
                             craftable = false;
                             break;
                         }
@@ -330,7 +335,7 @@ public class Inventories {
                 specifiedIngredientsList.forEach(ingredient -> ingredientList.removeIf(itemStack -> ItemStackUtils.isSameItem(itemStack, ingredient)));
                 craftable = ingredientList.isEmpty();
             }
-            InventoryUtils.setItem(inventory, craftable ? recipe.getResult() : new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").hideIdentifier().build(), 3, 6);
+            InventoryUtils.setItem(inventory, craftable ? shapelessRecipe.getResult() : new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").hideIdentifier().build(), 3, 6);
             InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 1, 6, 4);
             InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 6, 6, 9);
             return craftable;

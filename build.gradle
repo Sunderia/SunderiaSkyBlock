@@ -5,7 +5,8 @@ plugins {
     id 'de.undercouch.download' version '5.0.2'
 }
 
-apply from: rootProject.file('buildtools.gradle')
+//apply from: rootProject.file('buildtools.gradle')
+apply from: rootProject.file('specialSource.gradle')
 
 group 'fr.sunderia'
 version '1.0-SNAPSHOT'
@@ -16,6 +17,19 @@ String mcVersion = '1.18.1'
 
 shadowJar {
     configurations = [project.configurations.runtimeClasspath, project.configurations.shadow]
+}
+
+afterEvaluate {
+    shadowJar {
+        doLast {
+            def outputFiles = outputs.files.files
+            for (inputFile in outputFiles) {
+                File intermediateFile = new File(temporaryDir, inputFile.name.replace('.jar', '-obf.jar'))
+                File outputFile = inputFile
+                remapMojangToSpigot(inputFile, intermediateFile, outputFile, "1.18.1-R0.1-SNAPSHOT")
+            }
+        }
+    }
 }
 
 repositories {

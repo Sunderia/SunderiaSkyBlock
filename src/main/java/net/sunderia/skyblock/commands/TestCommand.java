@@ -1,8 +1,13 @@
 package net.sunderia.skyblock.commands;
 
+import fr.sunderia.sunderiautils.SunderiaUtils;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
+import fr.sunderia.sunderiautils.customblock.CustomBlock;
+import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import net.sunderia.skyblock.objects.Inventories;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +30,8 @@ public class TestCommand extends PluginCommand {
         getArg(args, 0).ifPresentOrElse(s -> {
             player.openInventory(Inventories.TEST_GUI);
         }, () -> player.openWorkbench(player.getLocation(), true));
+        player.getInventory().addItem(new CustomBlock.Builder(SunderiaUtils.key("ruby_ore"), 1)
+                .setDrops(new ItemBuilder(Material.EMERALD).setDisplayName(ChatColor.RED + "RUBY").build()).build().getAsItem());
     }
 
 }
