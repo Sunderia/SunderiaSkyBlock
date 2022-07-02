@@ -1,7 +1,6 @@
 package net.sunderia.skyblock.listener;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
-import net.sunderia.skyblock.SunderiaSkyblock;
 import net.sunderia.skyblock.objects.Inventories;
 import net.sunderia.skyblock.objects.Items;
 import net.sunderia.skyblock.objects.Skills;
@@ -9,24 +8,30 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.StructureGrowEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Events implements Listener {
 
-    private final Map<Location, Material> placedBlocks = new HashMap<>();
+    private final Map<Block, Double> damagedBlock = new HashMap<>();
+    private final List<Block> placedBlocks = new ArrayList<>();
 
     public static void onSecondEvent() {
 
@@ -42,7 +47,7 @@ public class Events implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         //Verify if the block isn't placed
-        if (!event.getBlock().hasMetadata("isPlaced")) {
+        if (!placedBlocks.contains(event.getBlock())) {
             //Set xpAdded depending on the type of the block broken
             switch (event.getBlock().getType()) {
                 //Mining skill
@@ -69,11 +74,14 @@ public class Events implements Listener {
                     }
                 }
             }
+        } else {
+            placedBlocks.remove(event.getBlock());
         }
     }
 
     @EventHandler
     public void onEntityPickupItem(EntityPickupItemEvent event) {
+        //Verify if it's a player
         if (event.getEntity() instanceof Player player) {
             //Verify if the item picked up is a wool
             if (event.getItem().getItemStack().getType().name().contains("WOOL")) {
@@ -89,13 +97,41 @@ public class Events implements Listener {
     }
 
     @EventHandler
+    public void onEntityDie(EntityDeathEvent event) {
+        if (event.getEntity().getKiller() != null) {
+            switch (event.getEntityType()) {
+                case BAT -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 1);
+                case CHICKEN -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 2);
+                case SHEEP, COW, RABBIT, PIG -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 3);
+                case SLIME -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 4);
+                case SILVERFISH, MUSHROOM_COW, SKELETON -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 5);
+                case ZOMBIE -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 6);
+                case ZOMBIE_VILLAGER -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 7);
+                case WITCH, CREEPER -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 8);
+                case SPIDER -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 9);
+                case WOLF, BLAZE, CAVE_SPIDER -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 10);
+                case ZOMBIFIED_PIGLIN -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 20);
+                case ENDERMITE -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 25);
+                case ENDERMAN -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 28);
+                case IRON_GOLEM, WITHER_SKELETON -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 40);
+                case MAGMA_CUBE -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 45);
+                case GHAST -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 50);
+                case ENDER_DRAGON -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 300);
+                case WITHER -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 1000);
+            }
+        }
+    }
+
+    @EventHandler
     public void onBlockDamage(BlockDamageEvent event) {
-        double hardness = event.getBlock().getType().getHardness();
-        double breakSpeed = event.getBlock().getBreakSpeed(event.getPlayer());
-        System.out.println("hardness " + hardness);
-        System.out.println("breakSpeed " + breakSpeed);
-        System.out.println("seconds " + Math.round(hardness / breakSpeed / 20));
-        System.out.println("ticks " + Math.round(hardness / breakSpeed));
+        if(!damagedBlock.containsKey(event.getBlock())) {
+            double hardness = event.getBlock().getType().getHardness();
+            double breakSpeed = event.getBlock().getBreakSpeed(event.getPlayer());
+            System.out.println("hardness " + hardness);
+            System.out.println("breakSpeed " + breakSpeed);
+            System.out.println("seconds " + Math.round(hardness / breakSpeed / 20));
+            System.out.println("ticks " + Math.round(hardness / breakSpeed));
+        }
     }
 
     @EventHandler
@@ -105,35 +141,35 @@ public class Events implements Listener {
 
     @EventHandler
     public void onBlockPlaced(BlockPlaceEvent event) {
-        //Set a metadata "isPlaced" used to verify if the block is placed thanks to this metadata
-        event.getBlock().setMetadata("isPlaced", new FixedMetadataValue(SunderiaSkyblock.getInstance(), true));
+        //Add the block to the placedBlocks list to verify if the block is placed
+        placedBlocks.add(event.getBlockPlaced());
     }
 
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        //Metadata is removed when the block that has a metadata is pushed with a piston so we remove the metadata from the block and set the metadata to the block that has a new location modified by the piston
+        //The block is removed from the list when the block that's added to the list is pushed with a piston so we remove the block from the list and add the block to the list that has a new location modified by the piston
         event.getBlocks()
                 .stream()
-                .filter(block -> block.hasMetadata("isPlaced"))
+                .filter(placedBlocks::contains)
                 .map(Block::getState)
                 .forEach(block -> {
-                    block.removeMetadata("isPlaced", SunderiaUtils.getPlugin());
-                    //We need to do a scheduler because metadata is set too fast while the block is not pushed to the new location
-                    Bukkit.getScheduler().runTask(SunderiaUtils.getPlugin(), () -> block.getLocation().add(event.getDirection().getDirection()).getBlock().setMetadata("isPlaced", new FixedMetadataValue(SunderiaUtils.getPlugin(), true)));
+                    placedBlocks.remove(block.getBlock());
+                    //We need to do a scheduler because the block is added to the list too fast while he's not pushed to the new location
+                    Bukkit.getScheduler().runTask(SunderiaUtils.getPlugin(), () -> placedBlocks.add(block.getLocation().add(event.getDirection().getDirection()).getBlock()));
                 });
     }
 
     @EventHandler
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        //Metadata is removed when the block that has a metadata is pushed with a piston so we remove the metadata from the block and set the metadata to the block that has a new location modified by the piston
+        //The block is removed from the list when the block that's added is pushed with a piston so we remove the block from the list and add the block to the list that has a new location modified by the piston
         event.getBlocks()
                 .stream()
-                .filter(block -> block.hasMetadata("isPlaced"))
+                .filter(placedBlocks::contains)
                 .map(Block::getState)
                 .forEach(block -> {
-                    block.removeMetadata("isPlaced", SunderiaUtils.getPlugin());
-                    //We need to do a scheduler because metadata is set too fast while the block is not pushed to the new location
-                    Bukkit.getScheduler().runTask(SunderiaUtils.getPlugin(), () -> block.getLocation().add(event.getDirection().getDirection()).getBlock().setMetadata("isPlaced", new FixedMetadataValue(SunderiaUtils.getPlugin(), true)));
+                    placedBlocks.remove(block.getBlock());
+                    //We need to do a scheduler because the block is added to the list too fast while the block is not pushed to the new location
+                    Bukkit.getScheduler().runTask(SunderiaUtils.getPlugin(), () -> placedBlocks.add(block.getLocation().add(event.getDirection().getDirection()).getBlock()));
                 });
     }
 
@@ -142,12 +178,14 @@ public class Events implements Listener {
         //Go through all blocks that have the "isPlaced" metadata to remove that metadata because when saplings that have "isPlaced" metadata grow the logs in same position of the saplings have the "isPlaced" metadata
         event.getBlocks()
                 .stream()
-                .filter(blockState -> blockState.hasMetadata("isPlaced"))
-                .forEach(blockState -> blockState.removeMetadata("isPlaced", SunderiaUtils.getPlugin()));
+                .map(BlockState::getBlock)
+                .filter(placedBlocks::contains)
+                .forEach(placedBlocks::remove);
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
+        //Cancel the opening of the default crafting GUI and open the custom crafting GUI
         if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.CRAFTING_TABLE && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             event.setCancelled(true);
             event.getPlayer().openInventory(Inventories.CRAFTING_GUI);
@@ -157,5 +195,17 @@ public class Events implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         event.getPlayer().getInventory().setItem(4, Items.MINEMOBS_GUN);
+    }
+
+    @EventHandler
+    public void onPlayerDebug(AsyncPlayerChatEvent event) {
+        if(event.getMessage().equalsIgnoreCase("debug")) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(placedBlocks.stream().map(Block::getLocation).map(this::locToStr).collect(Collectors.joining("\n")));
+        }
+    }
+
+    private String locToStr(Location location) {
+        return "x: " + location.getBlockX() + " y: " + location.getBlockY() + " z: " + location.getBlockZ();
     }
 }

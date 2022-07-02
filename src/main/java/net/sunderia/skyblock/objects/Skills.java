@@ -62,9 +62,27 @@ public enum Skills {
         return roman.toString();
     }
 
-    public static void addXp(Skills skill, Player player, double xpAdded){
+    public static void addXp(Skills skill, Player player, double xpAdded) {
         //Add xpAdded for the player's skill
         SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp", SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp") + xpAdded);
+        //Verify if the actual xp exceeds the required level for the next level, if true the player get to the next level for the specified skill and receives rewards for the level
+        if(SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp") >= skill.getXpNeededEachLevel().get(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))){
+            //Increase the player's skill level
+            SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level", SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") + 1);
+            //Remove the amount of xp needed for the next level from the player's actual xp
+            SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp", SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp") - skill.getXpNeededEachLevel().get(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") - 1));
+            //Play a sound for the player
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+            //Send a level up message for the player
+            player.sendMessage(ChatColor.DARK_AQUA + "================================================================\n" +
+                    ChatColor.AQUA + ChatColor.BOLD + "SKILL LEVEL UP " + ChatColor.RESET + ChatColor.DARK_AQUA + StringUtils.capitalize(skill.name().toLowerCase()) + " " + (SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") == 1 ? ChatColor.DARK_AQUA + integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level")) : ChatColor.DARK_GRAY + integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") - 1) + " -> " + ChatColor.DARK_AQUA + integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))) + "\n" +
+                    ChatColor.GREEN + ChatColor.BOLD + "REWARDS\n" +
+                    ChatColor.RESET + ChatColor.WHITE + " Lmao you don't have rewards for this level noob\n" +
+                    ChatColor.DARK_AQUA + "================================================================"
+            );
+            //Save config
+            SunderiaSkyblock.getInstance().saveConfig();
+        }
         //Send a message in the player's actionbar with the xp gained, the actual xp for woodcutting skill and xp needed to level up
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GOLD + "+" + (String.valueOf(xpAdded).endsWith(".0") ? String.valueOf(xpAdded).substring(0, String.valueOf(xpAdded).length() - 2) : xpAdded) + " " +
                 StringUtils.capitalize(skill.name().toLowerCase()) + " (" +
@@ -83,27 +101,5 @@ public enum Skills {
         //Play a sound for the player
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
         //Verify if the player can level up
-        levelUp(skill, player);
-    }
-
-    public static void levelUp(Skills skill, Player player){
-        //Verify if the actual xp exceeds the required level for the next level, if true the player get to the next level for the specified skill and receives rewards for the level
-        if(SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp") >= skill.getXpNeededEachLevel().get(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))){
-            //Increase the player's skill level
-            SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level", SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") + 1);
-            //Remove the amount of xp needed for the next level from the player's actual xp
-            SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp", SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp") - skill.getXpNeededEachLevel().get(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") - 1));
-            //Play a sound for the player
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-            //Send a level up message for the player
-            player.sendMessage(ChatColor.DARK_AQUA + "================================================================\n" +
-                    ChatColor.AQUA + ChatColor.BOLD + "SKILL LEVEL UP " + ChatColor.RESET + ChatColor.DARK_AQUA + StringUtils.capitalize(skill.name().toLowerCase()) + " " + ChatColor.DARK_GRAY + integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") - 1) + " -> " + ChatColor.DARK_AQUA + integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level")) + "\n" +
-                    ChatColor.GREEN + ChatColor.BOLD + "REWARDS\n" +
-                    ChatColor.RESET + ChatColor.WHITE + " Lmao you don't have rewards for this level noob\n" +
-                    ChatColor.DARK_AQUA + "================================================================"
-            );
-            //Save config
-            SunderiaSkyblock.getInstance().saveConfig();
-        }
     }
 }
