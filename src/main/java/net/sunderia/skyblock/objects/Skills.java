@@ -66,7 +66,7 @@ public enum Skills {
         //Add xpAdded for the player's skill
         SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp", SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp") + xpAdded);
         //Verify if the actual xp exceeds the required level for the next level, if true the player get to the next level for the specified skill and receives rewards for the level
-        if(SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp") >= skill.getXpNeededEachLevel().get(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))){
+        while (SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp") >= skill.getXpNeededEachLevel().get(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))){
             //Increase the player's skill level
             SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level", SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") + 1);
             //Remove the amount of xp needed for the next level from the player's actual xp

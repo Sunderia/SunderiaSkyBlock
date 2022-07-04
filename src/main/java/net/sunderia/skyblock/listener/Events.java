@@ -1,6 +1,8 @@
 package net.sunderia.skyblock.listener;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
+import fr.sunderia.sunderiautils.utils.ItemStackUtils;
+import net.sunderia.skyblock.SunderiaSkyblock;
 import net.sunderia.skyblock.objects.Inventories;
 import net.sunderia.skyblock.objects.Items;
 import net.sunderia.skyblock.objects.Skills;
@@ -21,12 +23,14 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.StructureGrowEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Events implements Listener {
 
@@ -69,9 +73,8 @@ public class Events implements Listener {
                 case RED_MUSHROOM, BROWN_MUSHROOM, SUGAR_CANE -> Skills.addXp(Skills.FARMING, event.getPlayer(), 6);
                 default -> {
                     //Verify if the block is a log to give xp to the player
-                    if (event.getBlock().getType().name().contains("LOG")) {
+                    if (event.getBlock().getType().name().contains("LOG"))
                         Skills.addXp(Skills.WOODCUTTING, event.getPlayer(), 6);
-                    }
                 }
             }
         } else {
@@ -84,14 +87,21 @@ public class Events implements Listener {
         //Verify if it's a player
         if (event.getEntity() instanceof Player player) {
             //Verify if the item picked up is a wool
-            if (event.getItem().getItemStack().getType().name().contains("WOOL")) {
-                Skills.addXp(Skills.FARMING, player, 2);
-            } else {
-                switch (event.getItem().getItemStack().getType()) {
-                    //Farming
-                    case LEATHER -> Skills.addXp(Skills.FARMING, player, 1);
-                    case PORKCHOP, RABBIT_FOOT, RABBIT, RABBIT_HIDE, CHICKEN, FEATHER, BEEF, MUTTON -> Skills.addXp(Skills.FARMING, player, 2);
+            if(!event.getItem().getItemStack().getItemMeta().getPersistentDataContainer().has(SunderiaUtils.key("xpReceived"), PersistentDataType.BYTE)) {
+                for(int i = 0; i < event.getItem().getItemStack().getAmount(); i++) {
+                    if (event.getItem().getItemStack().getType().name().contains("WOOL")) {
+                        Skills.addXp(Skills.FARMING, player, 2);
+                    } else {
+                        switch (event.getItem().getItemStack().getType()) {
+                            //Farming
+                            case LEATHER -> Skills.addXp(Skills.FARMING, player, 1);
+                            case PORKCHOP, RABBIT_FOOT, RABBIT, RABBIT_HIDE, CHICKEN, FEATHER, BEEF, MUTTON -> Skills.addXp(Skills.FARMING, player, 2);
+                        }
+                    }
                 }
+                ItemMeta itemMeta = event.getItem().getItemStack().hasItemMeta() ? event.getItem().getItemStack().getItemMeta() : Bukkit.getItemFactory().getItemMeta(event.getItem().getItemStack().getType());
+                itemMeta.getPersistentDataContainer().set(SunderiaUtils.key("xpReceived"), PersistentDataType.BYTE, (byte) 0);
+                event.getItem().getItemStack().setItemMeta(itemMeta);
             }
         }
     }
@@ -136,7 +146,7 @@ public class Events implements Listener {
 
     @EventHandler
     public void onBlockDamageAbort(BlockDamageAbortEvent event) {
-
+        damagedBlock.put(event.getBlock(), 0d);
     }
 
     @EventHandler
@@ -201,7 +211,13 @@ public class Events implements Listener {
     public void onPlayerDebug(AsyncPlayerChatEvent event) {
         if(event.getMessage().equalsIgnoreCase("debug")) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(placedBlocks.stream().map(Block::getLocation).map(this::locToStr).collect(Collectors.joining("\n")));
+            for(Player player : Bukkit.getServer().getOnlinePlayers()){
+                for(ItemStack itemStack : player.getInventory().getContents()){
+                    if(ItemStackUtils.isNotAirNorNull(itemStack) && itemStack.hasItemMeta())
+                        if(itemStack.getItemMeta().getPersistentDataContainer().has(SunderiaSkyblock.getKey("wasPlaced"), PersistentDataType.STRING))
+                            System.out.println(itemStack);
+                }
+            }
         }
     }
 
