@@ -6,6 +6,7 @@ import net.sunderia.skyblock.SunderiaSkyblock;
 import net.sunderia.skyblock.objects.Inventories;
 import net.sunderia.skyblock.objects.Items;
 import net.sunderia.skyblock.objects.Skills;
+import net.sunderia.skyblock.utils.BrokenBlocksService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,27 +19,37 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class Events implements Listener {
 
-    private final Map<Block, Double> damagedBlock = new HashMap<>();
     private final List<Block> placedBlocks = new ArrayList<>();
 
     public static void onSecondEvent() {
 
+    }
+
+    @EventHandler
+    public void onPlayerItemConsume(PlayerItemConsumeEvent event){
+        if(event.getItem().getType() == Material.MILK_BUCKET)
+            event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 999999, 255, false, false));
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event){
+        event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 999999, 255, false, false));
     }
 
     @EventHandler
@@ -77,9 +88,14 @@ public class Events implements Listener {
                         Skills.addXp(Skills.WOODCUTTING, event.getPlayer(), 6);
                 }
             }
-        } else {
+        } else
             placedBlocks.remove(event.getBlock());
-        }
+    }
+
+    @EventHandler
+    public void onPlayerAnimation(PlayerAnimationEvent event){
+        if(!BrokenBlocksService.isBrokenBlock(event.getPlayer().getTargetBlock(Set.of(Material.AIR, Material.WATER), 5).getLocation())) return;
+        BrokenBlocksService.getBrokenBlock(event.getPlayer().getTargetBlock(Set.of(Material.AIR, Material.WATER), 5).getLocation()).incrementDamage(event.getPlayer(), event.getPlayer().getTargetBlock(Set.of(Material.AIR, Material.WATER), 5).getType().getHardness());
     }
 
     @EventHandler
@@ -98,16 +114,16 @@ public class Events implements Listener {
                             case PORKCHOP, RABBIT_FOOT, RABBIT, RABBIT_HIDE, CHICKEN, FEATHER, BEEF, MUTTON -> Skills.addXp(Skills.FARMING, player, 2);
                         }
                     }
+                    ItemMeta itemMeta = event.getItem().getItemStack().hasItemMeta() ? event.getItem().getItemStack().getItemMeta() : Bukkit.getItemFactory().getItemMeta(event.getItem().getItemStack().getType());
+                    itemMeta.getPersistentDataContainer().set(SunderiaUtils.key("xpReceived"), PersistentDataType.BYTE, (byte) 0);
+                    event.getItem().getItemStack().setItemMeta(itemMeta);
                 }
-                ItemMeta itemMeta = event.getItem().getItemStack().hasItemMeta() ? event.getItem().getItemStack().getItemMeta() : Bukkit.getItemFactory().getItemMeta(event.getItem().getItemStack().getType());
-                itemMeta.getPersistentDataContainer().set(SunderiaUtils.key("xpReceived"), PersistentDataType.BYTE, (byte) 0);
-                event.getItem().getItemStack().setItemMeta(itemMeta);
             }
         }
     }
 
     @EventHandler
-    public void onEntityDie(EntityDeathEvent event) {
+    public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity().getKiller() != null) {
             switch (event.getEntityType()) {
                 case BAT -> Skills.addXp(Skills.COMBAT, event.getEntity().getKiller(), 1);
@@ -134,19 +150,12 @@ public class Events implements Listener {
 
     @EventHandler
     public void onBlockDamage(BlockDamageEvent event) {
-        if(!damagedBlock.containsKey(event.getBlock())) {
-            double hardness = event.getBlock().getType().getHardness();
-            double breakSpeed = event.getBlock().getBreakSpeed(event.getPlayer());
-            System.out.println("hardness " + hardness);
-            System.out.println("breakSpeed " + breakSpeed);
-            System.out.println("seconds " + Math.round(hardness / breakSpeed / 20));
-            System.out.println("ticks " + Math.round(hardness / breakSpeed));
-        }
+        BrokenBlocksService.createBrokenBlock(event.getBlock().getLocation(), (int) Math.round(event.getBlock().getType().getHardness() / (event.getBlock().getBreakSpeed(event.getPlayer()) * (1 / 0.00081))));
     }
 
     @EventHandler
     public void onBlockDamageAbort(BlockDamageAbortEvent event) {
-        damagedBlock.put(event.getBlock(), 0d);
+        BrokenBlocksService.removeBrokenBLock(event.getBlock().getLocation());
     }
 
     @EventHandler
