@@ -32,7 +32,7 @@ public class BrokenBlock {
     public void incrementDamage(Player from, double multiplier){
         if(isBroken()) return;
         damage += multiplier;
-        int animation = (int) ((damage / time) * 10);
+        int animation = (int) ((damage / time) * 11);
         if(animation != oldAnimation){
             if(animation < 10)
                 sendBreakPacket(animation);
@@ -45,7 +45,7 @@ public class BrokenBlock {
     }
 
     public boolean isBroken(){
-        return (int) ((damage / time) * 10) >= 10;
+        return (int) ((damage / time) * 11) >= 10;
     }
 
     public void breakBlock(Player breaker){
