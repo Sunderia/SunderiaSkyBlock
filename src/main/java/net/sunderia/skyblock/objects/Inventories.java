@@ -37,15 +37,16 @@ public class Inventories {
 
     public static final Inventory CRAFTING_GUI = new InventoryBuilder("Crafting Table", new InventoryBuilder.Shape("""
             BBBBBBBBB
-            B   BBBBB
-            B   BNBBB
-            B   BBBBB
+            B   BBBCB
+            B   BNBCB
+            B   BBBCB
             BBBBBBBBB
             RRRRERRRR
             """, Map.of('B', new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName(" ").build(),
             'R', new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").build(),
-            'N', new ItemBuilder(Material.BARRIER).setDisplayName("Recipe excepted").build(),
-            'E', new ItemBuilder(Material.BARRIER).setDisplayName("Exit").build())))
+            'N', new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").build(),
+            'E', new ItemBuilder(Material.BARRIER).setDisplayName("Exit").build(),
+            'C', new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("Ingredients expected").build())))
             .onClick(event -> {
                 //Return if the result slot (24th slot) is empty
                 if (event.getCurrentItem() != null && InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && event.getCurrentItem().getType().isAir())
@@ -55,7 +56,7 @@ public class Inventories {
                     event.getWhoClicked().closeInventory();
                 /*
                 Event is cancelled if the clicked item isn't null and
-                    if the clicked item is a black stained glass pane named " ", a green stained glass pane named " ", a red stained glass pane named " " or a barrier named "Recipe excepted"
+                    if the clicked item is a black stained glass pane named " ", a green stained glass pane named " ", a red stained glass pane named " " or a barrier named "Recipe expected"
                     or
                     if the slot is the result slot (24th slot) and
                         if the player's cursor is the same item as the result slot (24th slot)
@@ -63,7 +64,8 @@ public class Inventories {
                         if the click is a right click
                  */
                 if (event.getCurrentItem() != null && ((((event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().equals(" ")) ||
-                        (event.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().equals(" ")) ||
+                        (event.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && (event.getCurrentItem().getItemMeta().getDisplayName().equals(" ") ||
+                                event.getCurrentItem().getItemMeta().getDisplayName().equals("Ingredients expected"))) ||
                         (event.getCurrentItem().getType() == Material.GREEN_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().equals(" ")) ||
                         (event.getCurrentItem().getType() == Material.BARRIER && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().equals("Recipe expected")))) ||
                         (InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && ((ItemStackUtils.isNotAirNorNull(event.getCursor()) &&
@@ -76,10 +78,14 @@ public class Inventories {
                 if the cursor is air or is same item as the item and
                 if the cursor amount + item amount is equal or lower than 64
                  */
+                /*System.out.println("isResultSlot ? " + InventoryUtils.isSameSlot(event.getSlot(), 3, 6));
+                System.out.println("leftClick or shiftLeftClick ? " + (event.isLeftClick() || (event.isLeftClick() && event.isShiftClick())));
+                System.out.println("result item NOT null or air ? " + ItemStackUtils.isNotAirNorNull(event.getCurrentItem()));
+                System.out.println();*/
                 if (InventoryUtils.isSameSlot(event.getSlot(), 3, 6) &&
                         event.isLeftClick() &&
                         ItemStackUtils.isNotAirNorNull(event.getCurrentItem()) &&
-                        !(event.getClickedInventory() instanceof Inventory) &&
+                        !(event.getClickedInventory() instanceof PlayerInventory) &&
                         (!event.getCurrentItem().hasItemMeta() || !event.getCurrentItem().getItemMeta().getDisplayName().equals("Recipe expected")) &&
                         (event.getCursor().getType().isAir() || ItemStackUtils.isSameItem(event.getCursor(), InventoryUtils.getItem(event.getInventory(), 3, 6))) &&
                         event.getCursor().getAmount() + event.getCurrentItem().getAmount() <= 64) {
@@ -150,6 +156,7 @@ public class Inventories {
                                 else
                                     event.getWhoClicked().getInventory().addItem(shapelessRecipe.getResult());
                             }
+                            System.out.println(possibleCrafts);
                         //Verify if it's a shaped recipe
                         } else if (Bukkit.getRecipesFor(event.getCurrentItem()).stream().filter(recipe -> (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) && (Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30)
                                 .map(slot -> event.getInventory().getItem(slot) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(slot))
@@ -229,6 +236,7 @@ public class Inventories {
                             }
                         }
                     } else {
+                        //Verify if it's a shapeless recipe
                         if (Bukkit.getRecipesFor(event.getCurrentItem()).stream().filter(recipe -> (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) && (Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30)
                                 .map(slot -> event.getInventory().getItem(slot) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(slot))
                                 .anyMatch(specifiedIngredient -> (recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getIngredientMap().values() : ((ShapelessRecipe) recipe).getIngredientList())
@@ -258,13 +266,13 @@ public class Inventories {
                                 ItemStack sameIngredient = ingredientList.stream()
                                         .filter(ingredient -> {
                                             ItemStack specifiedIngredientClone = item.clone();
-                                            if(specifiedIngredientClone.hasItemMeta()) {
+                                            if (specifiedIngredientClone.hasItemMeta()) {
                                                 ItemMeta specifiedIngredientMeta = specifiedIngredientClone.getItemMeta();
                                                 specifiedIngredientMeta.getPersistentDataContainer().getKeys().forEach(key -> specifiedIngredientMeta.getPersistentDataContainer().remove(key));
                                                 specifiedIngredientClone.setItemMeta(specifiedIngredientMeta);
                                             }
                                             ItemStack ingredientClone = ingredient.clone();
-                                            if(ingredientClone.hasItemMeta()) {
+                                            if (ingredientClone.hasItemMeta()) {
                                                 ItemMeta ingredientMeta = ingredientClone.getItemMeta();
                                                 ingredientMeta.getPersistentDataContainer().getKeys().forEach(key -> ingredientMeta.getPersistentDataContainer().remove(key));
                                                 ingredientClone.setItemMeta(ingredientMeta);
@@ -277,6 +285,7 @@ public class Inventories {
                                 ingredientList.remove(sameIngredient);
                                 specifiedIngredients.remove(item);
                             }
+                        //Verify if it's a shaped recipe
                         } else if (Bukkit.getRecipesFor(event.getCurrentItem()).stream().filter(recipe -> (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) && (Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30)
                                 .map(slot -> event.getInventory().getItem(slot) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(slot))
                                 .anyMatch(specifiedIngredient -> (recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getIngredientMap().values() : ((ShapelessRecipe) recipe).getIngredientList())
@@ -341,12 +350,10 @@ public class Inventories {
                 if (InventoryUtils.getItem(event.getInventory(), 3, 6) == null || InventoryUtils.getItem(event.getInventory(), 3, 6).getType().isAir())
                     InventoryUtils.setItem(event.getInventory(), new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").build(), 3, 6);
                 Iterator<Recipe> sourceRecipes = Bukkit.recipeIterator();
-                List<List<ItemStack>> specifiedIngredients = Stream.of(0, 1, 2).map(x -> Stream.of(0, 1, 2)
-                        .map(y -> event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]))
-                        .toList()).toList();
                 while (sourceRecipes.hasNext()) {
-                    if (canCraft(event.getInventory(), sourceRecipes.next(), specifiedIngredients))
+                    if (canCraft(event.getInventory(), sourceRecipes.next()))
                         break;
+
                 }
             }, 0, 0)
             .onClose(event -> {
@@ -364,7 +371,12 @@ public class Inventories {
     private Inventories() {
     }
 
-    private static boolean canCraft(Inventory inventory, Recipe recipe, List<List<ItemStack>> specifiedIngredients) {
+    private static boolean canCraft(Inventory inventory, Recipe recipe) {
+        List<List<ItemStack>> specifiedIngredients = Stream.of(0, 1, 2)
+                .map(x -> Stream.of(0, 1, 2)
+                .map(y -> inventory.getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]) == null ? new ItemStack(Material.AIR) : inventory.getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]))
+                .toList())
+                .toList();
         if (recipe instanceof ShapedRecipe shapedRecipe) {
             boolean craftable = false;
             int coordinateX = 0;
@@ -431,7 +443,6 @@ public class Inventories {
                 if (craftable)
                     break;
             }
-            if(shapedRecipe.getResult().getType() == Material.STICK) System.out.println("Craftable ??? " + craftable);
             InventoryUtils.setItem(inventory, craftable ? shapedRecipe.getResult() : new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").build(), 3, 6);
             InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 1, 6, 4);
             InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 6, 6, 9);
@@ -462,5 +473,9 @@ public class Inventories {
             return craftable;
         }
         return false;
+    }
+
+    public static boolean canQuickCraft(Inventory inventory, Recipe recipe){
+        return true;
     }
 }
