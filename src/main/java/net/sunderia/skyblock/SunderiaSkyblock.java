@@ -58,6 +58,7 @@ public class SunderiaSkyblock extends JavaPlugin {
                 .addIngredient(new RecipeChoice.ExactChoice(new ItemBuilder(Material.LAPIS_LAZULI).hideIdentifier().setAmount(3).build()))
                 .addIngredient(new RecipeChoice.ExactChoice(new ItemBuilder(Material.DIAMOND).hideIdentifier().setAmount(2).build()))
                 .addIngredient(new RecipeChoice.ExactChoice(new ItemBuilder(Material.EMERALD).hideIdentifier().setAmount(1).build())));
+        Bukkit.addRecipe(new ShapedRecipe(getKey("test3"), new ItemBuilder(Material.PETRIFIED_OAK_SLAB).hideIdentifier().build()).shape("AAA").setIngredient('A', new RecipeChoice.ExactChoice(new ItemBuilder(Material.OAK_SLAB).setAmount(2).hideIdentifier().build())));
         Bukkit.getScheduler().runTaskTimer(this, this::saveConfig, 6000L, 6000L);
     }
 

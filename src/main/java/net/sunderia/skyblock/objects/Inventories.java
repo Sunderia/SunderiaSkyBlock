@@ -92,8 +92,9 @@ public class Inventories {
                     //When it's a shift click, we are calculating how much crafts is possible and loop to give the items directly in the player's inventory
                     if (event.isShiftClick()) {
                         event.setCancelled(true);
+                        //possibleCrafts is used later for loops
                         int possibleCrafts;
-                        //Verify if it's a shapeless recipe
+                        //Verify if it's a shapeless recipe by filtering only shaped and shapeless recipe and by filtering recipes where at least one ingredient needed is the same as one of the specifiedIngredients
                         if (Bukkit.getRecipesFor(event.getCurrentItem()).stream().filter(recipe -> (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) && (Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30)
                                 .map(slot -> event.getInventory().getItem(slot) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(slot))
                                 .anyMatch(specifiedIngredient -> (recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getIngredientMap().values() : ((ShapelessRecipe) recipe).getIngredientList())
@@ -133,11 +134,12 @@ public class Inventories {
                                     .getAmount());
                             //Do a loop for how many times the recipe can be crafted (possibleCrafts)
                             for (int i = 0; i < possibleCrafts; i++) {
-                                //Part where all the items' amount from crafting slots are decreased by the ingredient's amount similar to the item from crafting slots
+                                //Decrease amount of specified ingredientsz
                                 List<ItemStack> ingredientList = shapelessRecipe.getIngredientList();
                                 List<ItemStack> specifiedIngredients = new ArrayList<>(Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30).map(slot -> event.getInventory().getItem(slot))
                                         .filter(Objects::nonNull)
                                         .toList());
+                                //We loop for every ingredient in the shapeless's ingredient list and remove the same ingredient as the first specifiedIngredient's amount to the first specifiedIngredient, then the first specifiedIngredient and the same ingredient as the first specifiedIngredient are removed from their list
                                 for (int j = 0; j < shapelessRecipe.getIngredientList().size(); j++) {
                                     ItemStack item = specifiedIngredients.stream()
                                             .findFirst()
@@ -156,8 +158,7 @@ public class Inventories {
                                 else
                                     event.getWhoClicked().getInventory().addItem(shapelessRecipe.getResult());
                             }
-                            System.out.println(possibleCrafts);
-                        //Verify if it's a shaped recipe
+                            //Verify if it's a shaped recipe by filtering only shaped and shapeless recipe and by filtering recipes where at least one ingredient needed is the same as one of the specifiedIngredients
                         } else if (Bukkit.getRecipesFor(event.getCurrentItem()).stream().filter(recipe -> (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) && (Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30)
                                 .map(slot -> event.getInventory().getItem(slot) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(slot))
                                 .anyMatch(specifiedIngredient -> (recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getIngredientMap().values() : ((ShapelessRecipe) recipe).getIngredientList())
@@ -195,6 +196,7 @@ public class Inventories {
                                 default ->
                                         throw new IllegalStateException("Unexpected value: " + shapedRecipe.getShape().length * shapedRecipe.getShape()[0].length());
                             };
+                            //All possible positions for the shapedRecipe are generated
                             List<ItemStack[][]> positions = new ArrayList<>(possiblePos);
                             for (int i = 0; i < possiblePos; i++) {
                                 ItemStack[][] position = new ItemStack[][]{new ItemStack[3], new ItemStack[3], new ItemStack[3]};
@@ -209,6 +211,31 @@ public class Inventories {
                                     coordinateY++;
                                 } else coordinateX++;
                             }
+                            //actualPosition will be equal to the position used depending on the specifiedIngredients' placements
+                            List<List<ItemStack>> specifiedIngredients = Stream.of(0, 1, 2)
+                                    .map(x -> Stream.of(0, 1, 2)
+                                            .map(y -> event.getClickedInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]) == null ? new ItemStack(Material.AIR) : event.getClickedInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]))
+                                            .toList())
+                                    .toList();
+                            ItemStack[][] actualPosition = null;
+                            for(ItemStack[][] position : positions){
+                                for(int y = 0; y < 3; y++){
+                                    for(int x = 0; x < 3; x++){
+                                        if(position[y][x].getType() == specifiedIngredients.get(y).get(x).getType() || (ItemStackUtils.isAirOrNull(position[y][x]) && ItemStackUtils.isAirOrNull(specifiedIngredients.get(y).get(x))))
+                                            actualPosition = position;
+                                        else {
+                                            actualPosition = null;
+                                            break;
+                                        }
+                                    }
+                                    //actualPosition is not the correct position
+                                    if(actualPosition == null)
+                                        break;
+                                }
+                                //actualPosition is the correct position
+                                if(actualPosition != null)
+                                    break;
+                            }
                             //possibleCrafts is calculated by the quotient of the smallest amount of an item in the specified ingredients that are not air over
                             possibleCrafts = (int) Math.floor((double) lowestItemStack.getAmount() / Arrays.stream(positions.stream()
                                             .filter(position -> Arrays.stream(position).anyMatch(row -> row[0] != null))
@@ -220,12 +247,12 @@ public class Inventories {
                             for (int i = 0; i < possibleCrafts; i++) {
                                 for (int y = 0; y < 3; y++) {
                                     for (int x = 0; x < 3; x++) {
-                                        if (ItemStackUtils.isNotAirNorNull(event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[y][x])))
-                                            event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[y][x]).setAmount(event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[y][x]).getAmount() -
-                                                    positions.stream()
-                                                            .filter(position -> Arrays.stream(position).anyMatch(row -> row[0] != null))
-                                                            .findFirst()
-                                                            .get()[y][x].getAmount());
+                                        if (ItemStackUtils.isNotAirNorNull(specifiedIngredients.get(y).get(x)))
+                                            specifiedIngredients.get(y)
+                                                    .get(x)
+                                                    .setAmount(specifiedIngredients.get(y)
+                                                            .get(x)
+                                                            .getAmount() - actualPosition[y][x].getAmount());
                                     }
                                 }
                                 //Part where the result is added to the inventory
@@ -236,7 +263,7 @@ public class Inventories {
                             }
                         }
                     } else {
-                        //Verify if it's a shapeless recipe
+                        //Verify if it's a shapeless recipe by filtering only shaped and shapeless recipe and by filtering recipes where at least one ingredient needed is the same as one of the specifiedIngredients
                         if (Bukkit.getRecipesFor(event.getCurrentItem()).stream().filter(recipe -> (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) && (Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30)
                                 .map(slot -> event.getInventory().getItem(slot) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(slot))
                                 .anyMatch(specifiedIngredient -> (recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getIngredientMap().values() : ((ShapelessRecipe) recipe).getIngredientList())
@@ -261,7 +288,8 @@ public class Inventories {
                             List<ItemStack> specifiedIngredients = new ArrayList<>(Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30).map(slot -> event.getInventory().getItem(slot))
                                     .filter(Objects::nonNull)
                                     .toList());
-                            for (int j = 0; j < shapelessRecipe.getIngredientList().size(); j++) {
+                            //We loop for every ingredient in the shapeless's ingredient list and remove the same ingredient as the first specifiedIngredient's amount to the first specifiedIngredient, then the first specifiedIngredient and the same ingredient as the first specifiedIngredient are removed from their list
+                            for (int i = 0; i < shapelessRecipe.getIngredientList().size(); i++) {
                                 ItemStack item = specifiedIngredients.get(0);
                                 ItemStack sameIngredient = ingredientList.stream()
                                         .filter(ingredient -> {
@@ -285,7 +313,7 @@ public class Inventories {
                                 ingredientList.remove(sameIngredient);
                                 specifiedIngredients.remove(item);
                             }
-                        //Verify if it's a shaped recipe
+                            //Verify if it's a shaped recipe by filtering only shaped and shapeless recipe and by filtering recipes where at least one ingredient needed is the same as one of the specifiedIngredients
                         } else if (Bukkit.getRecipesFor(event.getCurrentItem()).stream().filter(recipe -> (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) && (Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30)
                                 .map(slot -> event.getInventory().getItem(slot) == null ? new ItemStack(Material.AIR) : event.getInventory().getItem(slot))
                                 .anyMatch(specifiedIngredient -> (recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getIngredientMap().values() : ((ShapelessRecipe) recipe).getIngredientList())
@@ -305,6 +333,7 @@ public class Inventories {
                                             }
                                             return ItemStackUtils.isSameItem(ingredientClone, specifiedIngredientClone);
                                         })))).findFirst().get() instanceof ShapedRecipe shapedRecipe) {
+                            //All possible positions for the shapedRecipe are generated
                             int coordinateX = 0;
                             int coordinateY = 0;
                             int possiblePos = switch (shapedRecipe.getShape().length * shapedRecipe.getShape()[0].length()) {
@@ -330,14 +359,40 @@ public class Inventories {
                                     coordinateY++;
                                 } else coordinateX++;
                             }
+                            //actualPosition will be equal to the position used depending on the specifiedIngredients' placements
+                            List<List<ItemStack>> specifiedIngredients = Stream.of(0, 1, 2)
+                                    .map(x -> Stream.of(0, 1, 2)
+                                            .map(y -> event.getClickedInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]) == null ? new ItemStack(Material.AIR) : event.getClickedInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]))
+                                            .toList())
+                                    .toList();
+                            ItemStack[][] actualPosition = null;
+                            for(ItemStack[][] position : positions){
+                                for(int y = 0; y < 3; y++){
+                                    for(int x = 0; x < 3; x++){
+                                        if(position[y][x].getType() == specifiedIngredients.get(y).get(x).getType() || (ItemStackUtils.isAirOrNull(position[y][x]) && ItemStackUtils.isAirOrNull(specifiedIngredients.get(y).get(x))))
+                                            actualPosition = position;
+                                        else {
+                                            actualPosition = null;
+                                            break;
+                                        }
+                                    }
+                                    //actualPosition is not the correct position
+                                    if(actualPosition == null)
+                                        break;
+                                }
+                                //actualPosition is the correct position
+                                if(actualPosition != null)
+                                    break;
+                            }
+                            //We do a loop for every crafting slot and remove position[y][x]'s amount from the specifiedIngredients.get(y).get(x)'s amount
                             for (int y = 0; y < 3; y++) {
                                 for (int x = 0; x < 3; x++) {
-                                    if (ItemStackUtils.isNotAirNorNull(event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[y][x])))
-                                        event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[y][x]).setAmount(event.getInventory().getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[y][x]).getAmount() -
-                                                positions.stream()
-                                                        .filter(position -> Arrays.stream(position).anyMatch(row -> row[0] != null))
-                                                        .findFirst()
-                                                        .get()[y][x].getAmount());
+                                    if (ItemStackUtils.isNotAirNorNull(specifiedIngredients.get(y).get(x)))
+                                        specifiedIngredients.get(y)
+                                                .get(x)
+                                                .setAmount(specifiedIngredients.get(y)
+                                                        .get(x)
+                                                        .getAmount() - actualPosition[y][x].getAmount());
                                 }
                             }
                         }
