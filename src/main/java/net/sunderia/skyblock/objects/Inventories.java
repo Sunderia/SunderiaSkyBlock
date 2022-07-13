@@ -3,14 +3,19 @@ package net.sunderia.skyblock.objects;
 import fr.sunderia.sunderiautils.utils.InventoryBuilder;
 import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import fr.sunderia.sunderiautils.utils.ItemStackUtils;
+import net.sunderia.skyblock.SunderiaSkyblock;
 import net.sunderia.skyblock.utils.InventoryUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class Inventories {
 
@@ -42,17 +47,17 @@ public class Inventories {
             B   BBBCB
             BBBBBBBBB
             RRRRERRRR
-            """, Map.of('B', new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName(" ").build(),
-            'R', new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").build(),
-            'N', new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").build(),
-            'E', new ItemBuilder(Material.BARRIER).setDisplayName("Exit").build(),
-            'C', new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("Ingredients expected").build())))
+            """, Map.of('B', new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).hideIdentifier().setDisplayName(" ").build(),
+            'R', new ItemBuilder(Material.RED_STAINED_GLASS_PANE).hideIdentifier().setDisplayName(" ").build(),
+            'N', addPersistentDataContainer(new ItemBuilder(Material.BARRIER).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Recipe expected"), SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE, (byte) 1).build(),
+            'E', addPersistentDataContainer(new ItemBuilder(Material.BARRIER).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Exit"), SunderiaSkyblock.getKey("exit"), PersistentDataType.BYTE, (byte) 1).build(),
+            'C', addPersistentDataContainer(new ItemBuilder(Material.RED_STAINED_GLASS_PANE).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Ingredients expected"), SunderiaSkyblock.getKey("ingredientsExpected"), PersistentDataType.BYTE, (byte) 1).build())))
             .onClick(event -> {
                 //Return if the result slot (24th slot) is empty
                 if (event.getCurrentItem() != null && InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && event.getCurrentItem().getType().isAir())
                     return;
                 //Close the inventory if the played clicked on the barrier named "Exit"
-                if (InventoryUtils.isSameSlot(event.getSlot(), 6, 5) && InventoryUtils.getItem(event.getInventory(), 6, 5).hasItemMeta() && InventoryUtils.getItem(event.getInventory(), 6, 5).getItemMeta().getDisplayName().equals("Exit"))
+                if (InventoryUtils.isSameSlot(event.getSlot(), 6, 5) && InventoryUtils.getItem(event.getInventory(), 6, 5).hasItemMeta() && InventoryUtils.getItem(event.getInventory(), 6, 5).getItemMeta().getPersistentDataContainer().has(SunderiaSkyblock.getKey("exit"), PersistentDataType.BYTE))
                     event.getWhoClicked().closeInventory();
                 /*
                 Event is cancelled if the clicked item isn't null and
@@ -65,15 +70,15 @@ public class Inventories {
                  */
                 if (event.getCurrentItem() != null && ((((event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().equals(" ")) ||
                         (event.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && (event.getCurrentItem().getItemMeta().getDisplayName().equals(" ") ||
-                                event.getCurrentItem().getItemMeta().getDisplayName().equals("Ingredients expected"))) ||
+                                event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SunderiaSkyblock.getKey("ingredientsExpected"), PersistentDataType.BYTE))) ||
                         (event.getCurrentItem().getType() == Material.GREEN_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().equals(" ")) ||
-                        (event.getCurrentItem().getType() == Material.BARRIER && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().equals("Recipe expected")))) ||
+                        (event.getCurrentItem().getType() == Material.BARRIER && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE)))) ||
                         (InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && ((ItemStackUtils.isNotAirNorNull(event.getCursor()) &&
                                 ItemStackUtils.isSameItem(event.getCursor(), InventoryUtils.getItem(event.getInventory(), 3, 6))) || event.isRightClick()))))
                     event.setCancelled(true);
                 /*
                 Player can pick up item in the result slot (24th slot) only if the click is a left click and
-                if the item isn't null or a barrier named "Recipe expected" and
+                if the item isn't null or a barrier that haven't the PersistentDataContainer "recipeExpected" and
                 if the clicked inventory isn't the player's inventory and
                 if the cursor is air or is same item as the item and
                 if the cursor amount + item amount is equal or lower than 64
@@ -86,7 +91,7 @@ public class Inventories {
                         event.isLeftClick() &&
                         ItemStackUtils.isNotAirNorNull(event.getCurrentItem()) &&
                         !(event.getClickedInventory() instanceof PlayerInventory) &&
-                        (!event.getCurrentItem().hasItemMeta() || !event.getCurrentItem().getItemMeta().getDisplayName().equals("Recipe expected")) &&
+                        (!event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE)) &&
                         (event.getCursor().getType().isAir() || ItemStackUtils.isSameItem(event.getCursor(), InventoryUtils.getItem(event.getInventory(), 3, 6))) &&
                         event.getCursor().getAmount() + event.getCurrentItem().getAmount() <= 64) {
                     //When it's a shift click, we are calculating how much crafts is possible and loop to give the items directly in the player's inventory
@@ -404,11 +409,16 @@ public class Inventories {
             .onUpdate(event -> {
                 if (InventoryUtils.getItem(event.getInventory(), 3, 6) == null || InventoryUtils.getItem(event.getInventory(), 3, 6).getType().isAir())
                     InventoryUtils.setItem(event.getInventory(), new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").build(), 3, 6);
-                Iterator<Recipe> sourceRecipes = Bukkit.recipeIterator();
-                while (sourceRecipes.hasNext()) {
-                    if (canCraft(event.getInventory(), sourceRecipes.next()))
-                        break;
+                int recipesQuickCraft = 0;
+                for(Recipe recipe : StreamSupport.stream(Spliterators.spliteratorUnknownSize(Bukkit.recipeIterator(), 0), false)
+                        .filter(recipe -> recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe)
+                        .toList()){
+                    if (recipesQuickCraft < 3 && canQuickCraft(event.getInventory(), recipe)){
 
+                        recipesQuickCraft++;
+                    }
+                    if (canCraft(event.getInventory(), recipe))
+                        break;
                 }
             }, 0, 0)
             .onClose(event -> {
@@ -498,7 +508,7 @@ public class Inventories {
                 if (craftable)
                     break;
             }
-            InventoryUtils.setItem(inventory, craftable ? shapedRecipe.getResult() : new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").build(), 3, 6);
+            InventoryUtils.setItem(inventory, craftable ? shapedRecipe.getResult() : addPersistentDataContainer(new ItemBuilder(Material.BARRIER).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Recipe expected"), SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE, (byte) 1).build(), 3, 6);
             InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 1, 6, 4);
             InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 6, 6, 9);
             return craftable;
@@ -522,7 +532,7 @@ public class Inventories {
                 }));
                 craftable = ingredientList.isEmpty();
             }
-            InventoryUtils.setItem(inventory, craftable ? shapelessRecipe.getResult() : new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").hideIdentifier().build(), 3, 6);
+            InventoryUtils.setItem(inventory, craftable ? shapelessRecipe.getResult() : addPersistentDataContainer(new ItemBuilder(Material.BARRIER).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Recipe expected"), SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE, (byte) 1).build(), 3, 6);
             InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 1, 6, 4);
             InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 6, 6, 9);
             return craftable;
@@ -532,5 +542,14 @@ public class Inventories {
 
     public static boolean canQuickCraft(Inventory inventory, Recipe recipe){
         return true;
+    }
+
+    //Temporary function
+    public static ItemBuilder addPersistentDataContainer(ItemBuilder itemBuilder, NamespacedKey namespacedKey, PersistentDataType persistentDataType, Object value){
+        ItemStack itemStack = itemBuilder.build();
+        ItemMeta itemMeta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
+        itemMeta.getPersistentDataContainer().set(namespacedKey, persistentDataType, value);
+        itemStack.setItemMeta(itemMeta);
+        return new ItemBuilder(itemStack);
     }
 }

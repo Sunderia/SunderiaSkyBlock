@@ -115,7 +115,7 @@ public class Events implements Listener {
                         }
                     }
                     ItemMeta itemMeta = event.getItem().getItemStack().hasItemMeta() ? event.getItem().getItemStack().getItemMeta() : Bukkit.getItemFactory().getItemMeta(event.getItem().getItemStack().getType());
-                    itemMeta.getPersistentDataContainer().set(SunderiaUtils.key("xpReceived"), PersistentDataType.BYTE, (byte) 0);
+                    itemMeta.getPersistentDataContainer().set(SunderiaUtils.key("xpReceived"), PersistentDataType.BYTE, (byte) 1);
                     event.getItem().getItemStack().setItemMeta(itemMeta);
                 }
             }
