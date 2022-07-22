@@ -49,19 +49,6 @@ public enum Skills {
 
     //TODO Aller sur hypixel et commencer une nouvelle île, augmenter d'un niveau dans n'importe (mining par exemple) et regarder ce qu'il mettent pour le niveau 1
 
-    public static String integerToRoman(long number) {
-        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
-        String[] romanLiterals = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
-        StringBuilder roman = new StringBuilder();
-        for(int i = 1; i < values.length; i++) {
-            while(number >= values[i]) {
-                number -= values[i];
-                roman.append(romanLiterals[i]);
-            }
-        }
-        return roman.toString();
-    }
-
     public static void addXp(Skills skill, Player player, double xpAdded) {
         //Add xpAdded for the player's skill
         SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp", SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp") + xpAdded);
@@ -75,7 +62,7 @@ public enum Skills {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             //Send a level up message for the player
             player.sendMessage(ChatColor.DARK_AQUA + "================================================================\n" +
-                    ChatColor.AQUA + ChatColor.BOLD + "SKILL LEVEL UP " + ChatColor.RESET + ChatColor.DARK_AQUA + StringUtils.capitalize(skill.name().toLowerCase()) + " " + (SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") == 1 ? ChatColor.DARK_AQUA + integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level")) : ChatColor.DARK_GRAY + integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") - 1) + " -> " + ChatColor.DARK_AQUA + integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))) + "\n" +
+                    ChatColor.AQUA + ChatColor.BOLD + "SKILL LEVEL UP " + ChatColor.RESET + ChatColor.DARK_AQUA + StringUtils.capitalize(skill.name().toLowerCase()) + " " + (SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") == 1 ? ChatColor.DARK_AQUA + fr.sunderia.sunderiautils.utils.StringUtils.integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level")) : ChatColor.DARK_GRAY + fr.sunderia.sunderiautils.utils.StringUtils.integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") - 1) + " -> " + ChatColor.DARK_AQUA + fr.sunderia.sunderiautils.utils.StringUtils.integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))) + "\n" +
                     ChatColor.GREEN + ChatColor.BOLD + "REWARDS\n" +
                     ChatColor.RESET + ChatColor.WHITE + " Lmao you don't have rewards for this level noob\n" +
                     ChatColor.DARK_AQUA + "================================================================"

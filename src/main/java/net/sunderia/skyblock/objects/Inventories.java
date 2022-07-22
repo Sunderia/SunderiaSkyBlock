@@ -51,13 +51,16 @@ public class Inventories {
             'R', new ItemBuilder(Material.RED_STAINED_GLASS_PANE).hideIdentifier().setDisplayName(" ").build(),
             'N', addPersistentDataContainer(new ItemBuilder(Material.BARRIER).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Recipe expected"), SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE, (byte) 1).build(),
             'E', addPersistentDataContainer(new ItemBuilder(Material.BARRIER).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Exit"), SunderiaSkyblock.getKey("exit"), PersistentDataType.BYTE, (byte) 1).build(),
-            'C', addPersistentDataContainer(new ItemBuilder(Material.RED_STAINED_GLASS_PANE).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Ingredients expected"), SunderiaSkyblock.getKey("ingredientsExpected"), PersistentDataType.BYTE, (byte) 1).build())))
+            'C', addPersistentDataContainer(new ItemBuilder(Material.RED_STAINED_GLASS_PANE).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Quick Crafting Slot"), SunderiaSkyblock.getKey("quickCraftingSlot"), PersistentDataType.BYTE, (byte) 1).build())))
+            .onOpen(event -> {
+
+            })
             .onClick(event -> {
                 //Return if the result slot (24th slot) is empty
-                if (event.getCurrentItem() != null && InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && event.getCurrentItem().getType().isAir())
+                if (event.getSlot() == 23 && ItemStackUtils.isAirOrNull(event.getCurrentItem()))
                     return;
                 //Close the inventory if the played clicked on the barrier named "Exit"
-                if (InventoryUtils.isSameSlot(event.getSlot(), 6, 5) && InventoryUtils.getItem(event.getInventory(), 6, 5).hasItemMeta() && InventoryUtils.getItem(event.getInventory(), 6, 5).getItemMeta().getPersistentDataContainer().has(SunderiaSkyblock.getKey("exit"), PersistentDataType.BYTE))
+                if (event.getSlot() == 49 && hasPersistentDataContainer(event.getCurrentItem(), SunderiaSkyblock.getKey("exit"), PersistentDataType.BYTE))
                     event.getWhoClicked().closeInventory();
                 /*
                 Event is cancelled if the clicked item isn't null and
@@ -66,15 +69,16 @@ public class Inventories {
                     if the slot is the result slot (24th slot) and
                         if the player's cursor is the same item as the result slot (24th slot)
                         or
-                        if the click is a right click
+                        if the click is a right click and if the clicked inventory isn't instanceof PlayerInventory
                  */
                 if (event.getCurrentItem() != null && ((((event.getCurrentItem().getType() == Material.BLACK_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().equals(" ")) ||
                         (event.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && (event.getCurrentItem().getItemMeta().getDisplayName().equals(" ") ||
-                                event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SunderiaSkyblock.getKey("ingredientsExpected"), PersistentDataType.BYTE))) ||
+                                hasPersistentDataContainer(event.getCurrentItem(), SunderiaSkyblock.getKey("quickCraftingSlot"), PersistentDataType.BYTE))) ||
                         (event.getCurrentItem().getType() == Material.GREEN_STAINED_GLASS_PANE && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().equals(" ")) ||
-                        (event.getCurrentItem().getType() == Material.BARRIER && event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE)))) ||
-                        (InventoryUtils.isSameSlot(event.getSlot(), 3, 6) && ((ItemStackUtils.isNotAirNorNull(event.getCursor()) &&
-                                ItemStackUtils.isSameItem(event.getCursor(), InventoryUtils.getItem(event.getInventory(), 3, 6))) || event.isRightClick()))))
+                        (event.getCurrentItem().getType() == Material.BARRIER && hasPersistentDataContainer(event.getCurrentItem(), SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE)))) ||
+                        (Stream.of(23, 16, 25, 34)
+                                .anyMatch(slot -> slot == event.getSlot()) && ((ItemStackUtils.isNotAirNorNull(event.getCursor()) &&
+                                ItemStackUtils.isSameItem(event.getCursor(), event.getCurrentItem())) || (!(event.getClickedInventory() instanceof PlayerInventory) && event.isRightClick())))))
                     event.setCancelled(true);
                 /*
                 Player can pick up item in the result slot (24th slot) only if the click is a left click and
@@ -83,16 +87,12 @@ public class Inventories {
                 if the cursor is air or is same item as the item and
                 if the cursor amount + item amount is equal or lower than 64
                  */
-                /*System.out.println("isResultSlot ? " + InventoryUtils.isSameSlot(event.getSlot(), 3, 6));
-                System.out.println("leftClick or shiftLeftClick ? " + (event.isLeftClick() || (event.isLeftClick() && event.isShiftClick())));
-                System.out.println("result item NOT null or air ? " + ItemStackUtils.isNotAirNorNull(event.getCurrentItem()));
-                System.out.println();*/
-                if (InventoryUtils.isSameSlot(event.getSlot(), 3, 6) &&
+                if (event.getSlot() == 23 &&
                         event.isLeftClick() &&
                         ItemStackUtils.isNotAirNorNull(event.getCurrentItem()) &&
                         !(event.getClickedInventory() instanceof PlayerInventory) &&
-                        (!event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE)) &&
-                        (event.getCursor().getType().isAir() || ItemStackUtils.isSameItem(event.getCursor(), InventoryUtils.getItem(event.getInventory(), 3, 6))) &&
+                        (!hasPersistentDataContainer(event.getCurrentItem(), SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE)) &&
+                        (event.getCursor().getType().isAir() || ItemStackUtils.isSameItem(event.getCursor(), event.getCurrentItem())) &&
                         event.getCursor().getAmount() + event.getCurrentItem().getAmount() <= 64) {
                     //When it's a shift click, we are calculating how much crafts is possible and loop to give the items directly in the player's inventory
                     if (event.isShiftClick()) {
@@ -106,13 +106,13 @@ public class Inventories {
                                         .stream()
                                         .anyMatch(ingredient -> {
                                             ItemStack specifiedIngredientClone = specifiedIngredient.clone();
-                                            if(specifiedIngredientClone.hasItemMeta()) {
+                                            if (specifiedIngredientClone.hasItemMeta()) {
                                                 ItemMeta specifiedIngredientMeta = specifiedIngredientClone.getItemMeta();
                                                 specifiedIngredientMeta.getPersistentDataContainer().getKeys().forEach(key -> specifiedIngredientMeta.getPersistentDataContainer().remove(key));
                                                 specifiedIngredientClone.setItemMeta(specifiedIngredientMeta);
                                             }
                                             ItemStack ingredientClone = ingredient.clone();
-                                            if(ingredientClone.hasItemMeta()) {
+                                            if (ingredientClone.hasItemMeta()) {
                                                 ItemMeta ingredientMeta = ingredientClone.getItemMeta();
                                                 ingredientMeta.getPersistentDataContainer().getKeys().forEach(key -> ingredientMeta.getPersistentDataContainer().remove(key));
                                                 ingredientClone.setItemMeta(ingredientMeta);
@@ -139,7 +139,7 @@ public class Inventories {
                                     .getAmount());
                             //Do a loop for how many times the recipe can be crafted (possibleCrafts)
                             for (int i = 0; i < possibleCrafts; i++) {
-                                //Decrease amount of specified ingredientsz
+                                //Decrease amount of specified ingredients
                                 List<ItemStack> ingredientList = shapelessRecipe.getIngredientList();
                                 List<ItemStack> specifiedIngredients = new ArrayList<>(Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30).map(slot -> event.getInventory().getItem(slot))
                                         .filter(Objects::nonNull)
@@ -170,13 +170,13 @@ public class Inventories {
                                         .stream()
                                         .anyMatch(ingredient -> {
                                             ItemStack specifiedIngredientClone = specifiedIngredient.clone();
-                                            if(specifiedIngredientClone.hasItemMeta()) {
+                                            if (specifiedIngredientClone.hasItemMeta()) {
                                                 ItemMeta specifiedIngredientMeta = specifiedIngredientClone.getItemMeta();
                                                 specifiedIngredientMeta.getPersistentDataContainer().getKeys().forEach(key -> specifiedIngredientMeta.getPersistentDataContainer().remove(key));
                                                 specifiedIngredientClone.setItemMeta(specifiedIngredientMeta);
                                             }
                                             ItemStack ingredientClone = ingredient.clone();
-                                            if(ingredientClone.hasItemMeta()) {
+                                            if (ingredientClone.hasItemMeta()) {
                                                 ItemMeta ingredientMeta = ingredientClone.getItemMeta();
                                                 ingredientMeta.getPersistentDataContainer().getKeys().forEach(key -> ingredientMeta.getPersistentDataContainer().remove(key));
                                                 ingredientClone.setItemMeta(ingredientMeta);
@@ -223,10 +223,10 @@ public class Inventories {
                                             .toList())
                                     .toList();
                             ItemStack[][] actualPosition = null;
-                            for(ItemStack[][] position : positions){
-                                for(int y = 0; y < 3; y++){
-                                    for(int x = 0; x < 3; x++){
-                                        if(position[y][x].getType() == specifiedIngredients.get(y).get(x).getType() || (ItemStackUtils.isAirOrNull(position[y][x]) && ItemStackUtils.isAirOrNull(specifiedIngredients.get(y).get(x))))
+                            for (ItemStack[][] position : positions) {
+                                for (int y = 0; y < 3; y++) {
+                                    for (int x = 0; x < 3; x++) {
+                                        if (position[y][x].getType() == specifiedIngredients.get(y).get(x).getType() || (ItemStackUtils.isAirOrNull(position[y][x]) && ItemStackUtils.isAirOrNull(specifiedIngredients.get(y).get(x))))
                                             actualPosition = position;
                                         else {
                                             actualPosition = null;
@@ -234,11 +234,11 @@ public class Inventories {
                                         }
                                     }
                                     //actualPosition is not the correct position
-                                    if(actualPosition == null)
+                                    if (actualPosition == null)
                                         break;
                                 }
                                 //actualPosition is the correct position
-                                if(actualPosition != null)
+                                if (actualPosition != null)
                                     break;
                             }
                             //possibleCrafts is calculated by the quotient of the smallest amount of an item in the specified ingredients that are not air over
@@ -275,13 +275,13 @@ public class Inventories {
                                         .stream()
                                         .anyMatch(ingredient -> {
                                             ItemStack specifiedIngredientClone = specifiedIngredient.clone();
-                                            if(specifiedIngredientClone.hasItemMeta()) {
+                                            if (specifiedIngredientClone.hasItemMeta()) {
                                                 ItemMeta specifiedIngredientMeta = specifiedIngredientClone.getItemMeta();
                                                 specifiedIngredientMeta.getPersistentDataContainer().getKeys().forEach(key -> specifiedIngredientMeta.getPersistentDataContainer().remove(key));
                                                 specifiedIngredientClone.setItemMeta(specifiedIngredientMeta);
                                             }
                                             ItemStack ingredientClone = ingredient.clone();
-                                            if(ingredientClone.hasItemMeta()) {
+                                            if (ingredientClone.hasItemMeta()) {
                                                 ItemMeta ingredientMeta = ingredientClone.getItemMeta();
                                                 ingredientMeta.getPersistentDataContainer().getKeys().forEach(key -> ingredientMeta.getPersistentDataContainer().remove(key));
                                                 ingredientClone.setItemMeta(ingredientMeta);
@@ -325,13 +325,13 @@ public class Inventories {
                                         .stream()
                                         .anyMatch(ingredient -> {
                                             ItemStack specifiedIngredientClone = specifiedIngredient.clone();
-                                            if(specifiedIngredientClone.hasItemMeta()) {
+                                            if (specifiedIngredientClone.hasItemMeta()) {
                                                 ItemMeta specifiedIngredientMeta = specifiedIngredientClone.getItemMeta();
                                                 specifiedIngredientMeta.getPersistentDataContainer().getKeys().forEach(key -> specifiedIngredientMeta.getPersistentDataContainer().remove(key));
                                                 specifiedIngredientClone.setItemMeta(specifiedIngredientMeta);
                                             }
                                             ItemStack ingredientClone = ingredient.clone();
-                                            if(ingredientClone.hasItemMeta()) {
+                                            if (ingredientClone.hasItemMeta()) {
                                                 ItemMeta ingredientMeta = ingredientClone.getItemMeta();
                                                 ingredientMeta.getPersistentDataContainer().getKeys().forEach(key -> ingredientMeta.getPersistentDataContainer().remove(key));
                                                 ingredientClone.setItemMeta(ingredientMeta);
@@ -371,10 +371,10 @@ public class Inventories {
                                             .toList())
                                     .toList();
                             ItemStack[][] actualPosition = null;
-                            for(ItemStack[][] position : positions){
-                                for(int y = 0; y < 3; y++){
-                                    for(int x = 0; x < 3; x++){
-                                        if(position[y][x].getType() == specifiedIngredients.get(y).get(x).getType() || (ItemStackUtils.isAirOrNull(position[y][x]) && ItemStackUtils.isAirOrNull(specifiedIngredients.get(y).get(x))))
+                            for (ItemStack[][] position : positions) {
+                                for (int y = 0; y < 3; y++) {
+                                    for (int x = 0; x < 3; x++) {
+                                        if (position[y][x].getType() == specifiedIngredients.get(y).get(x).getType() || (ItemStackUtils.isAirOrNull(position[y][x]) && ItemStackUtils.isAirOrNull(specifiedIngredients.get(y).get(x))))
                                             actualPosition = position;
                                         else {
                                             actualPosition = null;
@@ -382,11 +382,11 @@ public class Inventories {
                                         }
                                     }
                                     //actualPosition is not the correct position
-                                    if(actualPosition == null)
+                                    if (actualPosition == null)
                                         break;
                                 }
                                 //actualPosition is the correct position
-                                if(actualPosition != null)
+                                if (actualPosition != null)
                                     break;
                             }
                             //We do a loop for every crafting slot and remove position[y][x]'s amount from the specifiedIngredients.get(y).get(x)'s amount
@@ -407,16 +407,25 @@ public class Inventories {
                 }
             })
             .onUpdate(event -> {
-                if (InventoryUtils.getItem(event.getInventory(), 3, 6) == null || InventoryUtils.getItem(event.getInventory(), 3, 6).getType().isAir())
-                    InventoryUtils.setItem(event.getInventory(), new ItemBuilder(Material.BARRIER).setDisplayName("Recipe expected").build(), 3, 6);
-                int recipesQuickCraft = 0;
-                for(Recipe recipe : StreamSupport.stream(Spliterators.spliteratorUnknownSize(Bukkit.recipeIterator(), 0), false)
+                Stream.of(16, 25, 34)
+                        .filter(slot -> ItemStackUtils.isAirOrNull(event.getInventory().getItem(slot)))
+                        .forEach(slot -> event.getInventory().setItem(slot, addPersistentDataContainer(new ItemBuilder(Material.RED_STAINED_GLASS_PANE).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Quick Crafting Slot"), SunderiaSkyblock.getKey("quickCraftingSlot"), PersistentDataType.BYTE, (byte) 1).build()));
+                if (ItemStackUtils.isAirOrNull(event.getInventory().getItem(23)))
+                    event.getInventory().setItem(23, addPersistentDataContainer(new ItemBuilder(Material.BARRIER).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Recipe expected"), SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE, (byte) 1).build());
+                for (Recipe recipe : StreamSupport.stream(Spliterators.spliteratorUnknownSize(Bukkit.recipeIterator(), 0), false)
                         .filter(recipe -> recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe)
-                        .toList()){
-                    if (recipesQuickCraft < 3 && canQuickCraft(event.getInventory(), recipe)){
-
-                        recipesQuickCraft++;
-                    }
+                        .toList()) {
+                    if (Stream.of(16, 25, 34)
+                            .noneMatch(slot -> hasPersistentDataContainer(event.getInventory().getItem(slot), SunderiaSkyblock.getKey("quickCraftingSlot"), PersistentDataType.BYTE)))
+                        break;
+                    if (Stream.of(16, 25, 34)
+                            .map(slot -> event.getInventory().getItem(slot))
+                            .noneMatch(itemStack -> ItemStackUtils.isSameItem(removeAllLore(itemStack, true), recipe.getResult())))
+                        canQuickCraft(recipe, event.getInventory());
+                }
+                for (Recipe recipe : StreamSupport.stream(Spliterators.spliteratorUnknownSize(Bukkit.recipeIterator(), 0), false)
+                        .filter(recipe -> recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe)
+                        .toList()) {
                     if (canCraft(event.getInventory(), recipe))
                         break;
                 }
@@ -437,42 +446,43 @@ public class Inventories {
     }
 
     private static boolean canCraft(Inventory inventory, Recipe recipe) {
+        boolean craftable = false;
         List<List<ItemStack>> specifiedIngredients = Stream.of(0, 1, 2)
                 .map(x -> Stream.of(0, 1, 2)
-                .map(y -> inventory.getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]) == null ? new ItemStack(Material.AIR) : inventory.getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]))
-                .toList())
+                        .map(y -> inventory.getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]) == null ? new ItemStack(Material.AIR) : inventory.getItem(new int[][]{{10, 11, 12}, {19, 20, 21}, {28, 29, 30}}[x][y]))
+                        .toList())
                 .toList();
-        if (recipe instanceof ShapedRecipe shapedRecipe) {
-            boolean craftable = false;
-            int coordinateX = 0;
-            int coordinateY = 0;
-            int possiblePos = switch (shapedRecipe.getShape().length * shapedRecipe.getShape()[0].length()) {
-                case 2 -> 6;
-                case 6 -> 2;
-                case 3 -> 3;
-                case 4 -> 4;
-                case 9 -> 1;
-                default ->
-                        throw new IllegalStateException("Unexpected value: " + shapedRecipe.getShape().length * shapedRecipe.getShape()[0].length());
-            };
-            List<ItemStack[][]> positions = new ArrayList<>(possiblePos);
-            for (int i = 0; i < possiblePos; i++) {
-                ItemStack[][] position = new ItemStack[][]{new ItemStack[3], new ItemStack[3], new ItemStack[3]};
-                for (int y = 0; y < shapedRecipe.getShape().length; y++) {
-                    for (int x = 0; x < shapedRecipe.getShape()[0].length(); x++) {
-                        position[y + coordinateY][x + coordinateX] = shapedRecipe.getIngredientMap().get(shapedRecipe.getShape()[y].charAt(x));
+        if (!specifiedIngredients.isEmpty()) {
+            if (recipe instanceof ShapedRecipe shapedRecipe) {
+                int coordinateX = 0;
+                int coordinateY = 0;
+                int possiblePos = switch (shapedRecipe.getShape().length * shapedRecipe.getShape()[0].length()) {
+                    case 2 -> 6;
+                    case 6 -> 2;
+                    case 3 -> 3;
+                    case 4 -> 4;
+                    case 9 -> 1;
+                    default ->
+                            throw new IllegalStateException("Unexpected value: " + shapedRecipe.getShape().length * shapedRecipe.getShape()[0].length());
+                };
+                List<ItemStack[][]> positions = new ArrayList<>(possiblePos);
+                for (int i = 0; i < possiblePos; i++) {
+                    ItemStack[][] position = new ItemStack[][]{new ItemStack[3], new ItemStack[3], new ItemStack[3]};
+                    for (int y = 0; y < shapedRecipe.getShape().length; y++) {
+                        for (int x = 0; x < shapedRecipe.getShape()[0].length(); x++) {
+                            position[y + coordinateY][x + coordinateX] = shapedRecipe.getIngredientMap().get(shapedRecipe.getShape()[y].charAt(x));
+                        }
                     }
+                    positions.add(Arrays.stream(position).map(y -> Arrays.stream(y).map(x -> x == null ? new ItemStack(Material.AIR) : x).toArray(ItemStack[]::new)).toArray(ItemStack[][]::new));
+                    if (coordinateX + 1 > 3 - shapedRecipe.getShape()[0].length()) {
+                        coordinateX = 0;
+                        coordinateY++;
+                    } else coordinateX++;
                 }
-                positions.add(Arrays.stream(position).map(y -> Arrays.stream(y).map(x -> x == null ? new ItemStack(Material.AIR) : x).toArray(ItemStack[]::new)).toArray(ItemStack[][]::new));
-                if (coordinateX + 1 > 3 - shapedRecipe.getShape()[0].length()) {
-                    coordinateX = 0;
-                    coordinateY++;
-                } else coordinateX++;
-            }
-            for (ItemStack[][] position : positions) {
-                int count = 0;
-                for (int y = 0; y < 3; y++) {
-                    for (int x = 0; x < 3; x++) {
+                for (ItemStack[][] position : positions) {
+                    int count = 0;
+                    for (int y = 0; y < 3; y++) {
+                        for (int x = 0; x < 3; x++) {
                         /*
                         craftable is true if the specifiedIngredient's amount is higher or equal to positionIngredient's amount and
                              ((if the count's char's choice map isn't null and
@@ -480,76 +490,179 @@ public class Inventories {
                              if the specifiedIngredient is same as the positionIngredient or
                              if the specifiedIngredient/positionIngredient are both null)
                         */
-                        ItemStack specifiedIngredientClone = specifiedIngredients.get(y).get(x).clone();
-                        if(specifiedIngredientClone.hasItemMeta()) {
-                            ItemMeta specifiedIngredientMeta = specifiedIngredientClone.getItemMeta();
-                            specifiedIngredientMeta.getPersistentDataContainer().getKeys().forEach(key -> specifiedIngredientMeta.getPersistentDataContainer().remove(key));
-                            specifiedIngredientClone.setItemMeta(specifiedIngredientMeta);
+                            ItemStack specifiedIngredientClone = removeAllPersitentDataContainer(specifiedIngredients.get(y).get(x), true);
+                            ItemStack ingredientClone = removeAllPersitentDataContainer(position[y][x], true);
+                            if (((ItemStackUtils.isNotAirNorNull(ingredientClone) && shapedRecipe.getChoiceMap().get("abcdefghi".charAt(count)) != null && shapedRecipe.getChoiceMap().get("abcdefghi".charAt(count)).test(specifiedIngredientClone)) || ItemStackUtils.isSameItem(ingredientClone, specifiedIngredientClone) || (ingredientClone.getType().isAir() && specifiedIngredientClone.getType().isAir())) && specifiedIngredientClone.getAmount() >= ingredientClone.getAmount()) {
+                                craftable = true;
+                                //The variable count is updated everytime if the positionIngredient isn't null, used for getting the choice map for verification
+                                if (ItemStackUtils.isNotAirNorNull(ingredientClone))
+                                    count++;
+                            } else {
+                                craftable = false;
+                                break;
+                            }
                         }
-                        ItemStack ingredientClone = position[y][x].clone();
-                        if(ingredientClone.hasItemMeta()) {
-                            ItemMeta ingredientMeta = ingredientClone.getItemMeta();
-                            ingredientMeta.getPersistentDataContainer().getKeys().forEach(key -> ingredientMeta.getPersistentDataContainer().remove(key));
-                            ingredientClone.setItemMeta(ingredientMeta);
-                        }
-                        if (((ItemStackUtils.isNotAirNorNull(ingredientClone) && shapedRecipe.getChoiceMap().get("abcdefghi".charAt(count)) != null && shapedRecipe.getChoiceMap().get("abcdefghi".charAt(count)).test(specifiedIngredientClone)) || ItemStackUtils.isSameItem(ingredientClone, specifiedIngredientClone) || (ingredientClone.getType().isAir() && specifiedIngredientClone.getType().isAir())) && specifiedIngredientClone.getAmount() >= ingredientClone.getAmount()) {
-                            craftable = true;
-                            //The variable count is updated everytime if the positionIngredient isn't null, used for getting the choice map for verification
-                            if(ItemStackUtils.isNotAirNorNull(ingredientClone))
-                                count++;
-                        } else {
-                            craftable = false;
+                        if (!craftable)
                             break;
-                        }
                     }
-                    if (!craftable)
+                    if (craftable)
                         break;
                 }
-                if (craftable)
-                    break;
+            } else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
+                List<ItemStack> specifiedIngredientsList = new ArrayList<>(specifiedIngredients.stream().flatMap(List::stream).filter(ItemStackUtils::isNotAirNorNull).toList());
+                List<ItemStack> ingredientList = shapelessRecipe.getIngredientList();
+                if (!specifiedIngredientsList.isEmpty() && ingredientList.size() == specifiedIngredientsList.size()) {
+                    specifiedIngredientsList.forEach(specifiedIngredient -> ingredientList.removeIf(ingredient -> {
+                        if (!specifiedIngredient.hasItemMeta())
+                            return ItemStackUtils.isSameItem(ingredient, specifiedIngredient);
+                        return ItemStackUtils.isSameItem(removeAllPersitentDataContainer(specifiedIngredient, true), removeAllPersitentDataContainer(ingredient, true));
+                    }));
+                    craftable = ingredientList.isEmpty();
+                }
             }
-            InventoryUtils.setItem(inventory, craftable ? shapedRecipe.getResult() : addPersistentDataContainer(new ItemBuilder(Material.BARRIER).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Recipe expected"), SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE, (byte) 1).build(), 3, 6);
-            InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 1, 6, 4);
-            InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 6, 6, 9);
-            return craftable;
-        } else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
-            boolean craftable = false;
-            List<ItemStack> specifiedIngredientsList = new ArrayList<>(specifiedIngredients.stream().flatMap(List::stream).filter(ItemStackUtils::isNotAirNorNull).toList());
-            List<ItemStack> ingredientList = shapelessRecipe.getIngredientList();
-            if (!specifiedIngredientsList.isEmpty() && ingredientList.size() == specifiedIngredientsList.size()) {
-                specifiedIngredientsList.forEach(specifiedIngredient -> ingredientList.removeIf(ingredient -> {
-                    if(!specifiedIngredient.hasItemMeta())
-                        return ItemStackUtils.isSameItem(ingredient, specifiedIngredient);
-                    ItemStack specifiedIngredientClone = specifiedIngredient.clone();
-                    ItemMeta specifiedIngredientMeta = specifiedIngredientClone.getItemMeta();
-                    specifiedIngredientMeta.getPersistentDataContainer().getKeys().forEach(key -> specifiedIngredientMeta.getPersistentDataContainer().remove(key));
-                    specifiedIngredientClone.setItemMeta(specifiedIngredientMeta);
-                    ItemStack ingredientClone = ingredient.clone();
-                    ItemMeta ingredientMeta = ingredientClone.getItemMeta();
-                    ingredientMeta.getPersistentDataContainer().getKeys().forEach(key -> ingredientMeta.getPersistentDataContainer().remove(key));
-                    ingredientClone.setItemMeta(ingredientMeta);
-                    return ItemStackUtils.isSameItem(ingredientClone, specifiedIngredientClone);
-                }));
-                craftable = ingredientList.isEmpty();
-            }
-            InventoryUtils.setItem(inventory, craftable ? shapelessRecipe.getResult() : addPersistentDataContainer(new ItemBuilder(Material.BARRIER).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Recipe expected"), SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE, (byte) 1).build(), 3, 6);
-            InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 1, 6, 4);
-            InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 6, 6, 9);
-            return craftable;
         }
-        return false;
+        inventory.setItem(23, craftable ? recipe.getResult() : addPersistentDataContainer(new ItemBuilder(Material.BARRIER).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Recipe expected"), SunderiaSkyblock.getKey("recipeExpected"), PersistentDataType.BYTE, (byte) 1).build());
+        InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 1, 6, 4);
+        InventoryUtils.fillRectangle(inventory, new ItemBuilder(craftable ? Material.GREEN_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE).setDisplayName(" ").hideIdentifier().build(), 6, 6, 6, 9);
+        return craftable;
     }
 
-    public static boolean canQuickCraft(Inventory inventory, Recipe recipe){
-        return true;
+    public static boolean canQuickCraft(Recipe recipe, Inventory inventory) {
+        boolean quickCraftable = false;
+        List<ItemStack> specifiedIngredients = new ArrayList<>();
+        List<ItemStack> neededIngredients = new ArrayList<>();
+        List<ItemStack> choices = new ArrayList<>();
+        //Get the ingredients placed in the craftingSlots and the contents in the inventory and make these lists irreducible
+        Stream.concat(Stream.of(10, 11, 12, 19, 20, 21, 28, 29, 30)
+                        .filter(slot -> inventory.getItem(slot) != null)
+                        .map(inventory::getItem), Arrays.stream(inventory.getViewers().get(0).getInventory().getContents()))
+                .filter(ItemStackUtils::isNotAirNorNull)
+                .map(itemStack -> removeAllPersitentDataContainer(itemStack, true))
+                .forEach(specifiedIngredient -> {
+                    specifiedIngredients.stream()
+                            .filter(listItemStack -> ItemStackUtils.isSameItem(listItemStack, specifiedIngredient))
+                            .forEach(listItemStack -> {
+                                listItemStack.setAmount(listItemStack.getAmount() + specifiedIngredient.getAmount());
+                                specifiedIngredient.setAmount(0);
+                            });
+                    if (specifiedIngredient.getAmount() > 0)
+                        specifiedIngredients.add(specifiedIngredient);
+                });
+        //If there is no specifiedIngredients, we know that the recipe isn't quickCraftable
+        if (!specifiedIngredients.isEmpty()) {
+            //Loop for every recipeChoice from the choice map/list and transform this into a List<ItemStack>
+            for (List<ItemStack> itemStackList : (recipe instanceof ShapedRecipe shapedRecipe ? shapedRecipe.getChoiceMap()
+                    .values()
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .toList() : ((ShapelessRecipe) recipe).getChoiceList()).stream()
+                    .map(recipeChoice -> {
+                        //Transform recipeChoice by his choices list and transform List<Material> to List<ItemStack> and return always a List<ItemStack>
+                        return recipeChoice instanceof RecipeChoice.MaterialChoice ? ((RecipeChoice.MaterialChoice) recipeChoice).getChoices().stream()
+                                .map(ItemStack::new)
+                                .toList() : ((RecipeChoice.ExactChoice) recipeChoice).getChoices();
+                    })
+                    //Filter only choices lists that have a size higher than 1
+                    .toList()) {
+                //If itemStackList have one element, we add this element to the neededIngredients
+                if (itemStackList.size() == 1)
+                    choices.add(removeAllPersitentDataContainer(itemStackList.get(0), true));
+                else {
+                    //If itemStackList have more than one element and contained one of the specifiedIngredients, we transform that list to the specifiedIngredient that's the same as one of the ItemStack from itemStackList
+                    Optional<ItemStack> sameItemStack = itemStackList.stream()
+                            .filter(itemStack -> specifiedIngredients.stream()
+                                    .anyMatch(specifiedIngredient -> ItemStackUtils.isSameItem(itemStack, specifiedIngredient)))
+                            .findFirst();
+                    if (sameItemStack.isPresent()) choices.add(sameItemStack.get());
+                    else return false;
+                }
+            }
+            //Make choices list irreducible into neededIngredients
+            choices.forEach(neededIngredient -> {
+                neededIngredients.stream()
+                        .filter(listItemStack -> ItemStackUtils.isSameItem(listItemStack, neededIngredient))
+                        .forEach(listItemStack -> {
+                            listItemStack.setAmount(listItemStack.getAmount() + neededIngredient.getAmount());
+                            neededIngredient.setAmount(0);
+                        });
+                if (neededIngredient.getAmount() > 0)
+                    neededIngredients.add(neededIngredient);
+            });
+            //Verify if the recipe is craftable depending on the specifiedIngredients and the neededIngredients
+            if (neededIngredients.stream()
+                    .allMatch(neededIngredient -> specifiedIngredients.stream()
+                            .anyMatch(specifiedIngredient -> ItemStackUtils.isSameItem(neededIngredient, specifiedIngredient)))) {
+                for (ItemStack specifiedIngredient : specifiedIngredients.stream()
+                        .filter(specifiedItem -> neededIngredients.stream()
+                                .anyMatch(neededItem -> ItemStackUtils.isSameItem(specifiedItem, neededItem)))
+                        .toList()) {
+                    //There should be always only one neededIngredient that's the same as the specifiedIngredient because a type of material should be present only one time
+                    ItemStack neededIngredient = neededIngredients.stream()
+                            .filter(itemStack -> ItemStackUtils.isSameItem(itemStack, specifiedIngredient))
+                            .findFirst()
+                            .get();
+                    if (specifiedIngredient.getAmount() - neededIngredient.getAmount() >= 0) {
+                        specifiedIngredient.setAmount(specifiedIngredient.getAmount() - neededIngredient.getAmount());
+                        quickCraftable = true;
+                    } else {
+                        quickCraftable = false;
+                        break;
+                    }
+                }
+            }
+        }
+        ItemStack recipeResult = recipe.getResult().clone();
+        ItemMeta recipeResultMeta = recipeResult.hasItemMeta() ? recipeResult.getItemMeta() : Bukkit.getItemFactory().getItemMeta(recipeResult.getType());
+        recipeResultMeta.setLore(Stream.concat(recipeResultMeta.hasLore() ? recipeResultMeta.getLore()
+                        .stream() : Stream.of(), Stream.concat(Stream.of(ChatColor.BLUE + "Needed ingredients:"), neededIngredients.stream()
+                        .map(neededIngredient -> ChatColor.RESET + "" + ChatColor.GRAY + neededIngredient.getAmount() + "x " + (ItemStackUtils.isCustomItem(neededIngredient) ? neededIngredient.getItemMeta()
+                                .getDisplayName() : fr.sunderia.sunderiautils.utils.StringUtils.capitalizeWord(neededIngredient.getType()
+                                .name()
+                                .replace("_", " ")
+                                .toLowerCase(Locale.ROOT))))))
+                .toList());
+        recipeResult.setItemMeta(recipeResultMeta);
+        //Get the first quickCraftingSlots (17th slot, 26th slot and 35th slot) that haven't the PersitentDataContainer "quickCraftingSlot" and set the recipe's result if he's quickCraftable or the red glass pannel if the recipe isn't quickCraftable
+        inventory.setItem(Stream.of(16, 25, 34)
+                .filter(slot -> hasPersistentDataContainer(inventory.getItem(slot), SunderiaSkyblock.getKey("quickCraftingSlot"), PersistentDataType.BYTE))
+                .findFirst()
+                .get(), quickCraftable ? recipeResult : addPersistentDataContainer(new ItemBuilder(Material.RED_STAINED_GLASS_PANE).hideIdentifier().setDisplayName(ChatColor.RESET + "" + ChatColor.RED + "Quick Crafting Slot"), SunderiaSkyblock.getKey("quickCraftingSlot"), PersistentDataType.BYTE, (byte) 1).build());
+        return quickCraftable;
     }
 
     //Temporary function
-    public static ItemBuilder addPersistentDataContainer(ItemBuilder itemBuilder, NamespacedKey namespacedKey, PersistentDataType persistentDataType, Object value){
+    public static <T, Z> ItemBuilder addPersistentDataContainer(ItemBuilder itemBuilder, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType, Z value) {
         ItemStack itemStack = itemBuilder.build();
         ItemMeta itemMeta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
         itemMeta.getPersistentDataContainer().set(namespacedKey, persistentDataType, value);
         itemStack.setItemMeta(itemMeta);
         return new ItemBuilder(itemStack);
+    }
+
+    //Temporary function
+    public static <T, Z> boolean hasPersistentDataContainer(ItemStack itemStack, NamespacedKey namespacedKey, PersistentDataType<T, Z> persistentDataType) {
+        return ItemStackUtils.isNotAirNorNull(itemStack) && itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey, persistentDataType);
+    }
+
+    //Temporary function
+    public static ItemStack removeAllPersitentDataContainer(ItemStack itemStack, boolean clone) {
+        ItemStack item = clone ? itemStack.clone() : itemStack;
+        if (item.hasItemMeta()) {
+            ItemMeta itemMeta = item.getItemMeta();
+            itemMeta.getPersistentDataContainer().getKeys().forEach(key -> itemMeta.getPersistentDataContainer().remove(key));
+            item.setItemMeta(itemMeta);
+        }
+        return item;
+    }
+
+    //Temporary function
+    public static ItemStack removeAllLore(ItemStack itemStack, boolean clone) {
+        ItemStack item = clone ? itemStack.clone() : itemStack;
+        if (item.hasItemMeta() && !item.getItemMeta().getLore().isEmpty()) {
+            ItemMeta itemMeta = item.getItemMeta();
+            itemMeta.setLore(new ArrayList<>());
+            item.setItemMeta(itemMeta);
+        }
+        return item;
     }
 }
