@@ -2,13 +2,11 @@ package net.sunderia.skyblock.listener;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
 import fr.sunderia.sunderiautils.utils.ItemStackUtils;
-import net.sunderia.skyblock.SunderiaSkyblock;
 import net.sunderia.skyblock.objects.Inventories;
 import net.sunderia.skyblock.objects.Items;
 import net.sunderia.skyblock.objects.Skills;
 import net.sunderia.skyblock.utils.BrokenBlocksService;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -103,7 +101,7 @@ public class Events implements Listener {
         //Verify if it's a player
         if (event.getEntity() instanceof Player player) {
             //Verify if the item picked up is a wool
-            if(!event.getItem().getItemStack().getItemMeta().getPersistentDataContainer().has(SunderiaUtils.key("xpReceived"), PersistentDataType.BYTE)) {
+            if(!ItemStackUtils.hasPersistentDataContainer(event.getItem().getItemStack(), SunderiaUtils.key("xpReceived"), PersistentDataType.BYTE)) {
                 for(int i = 0; i < event.getItem().getItemStack().getAmount(); i++) {
                     if (event.getItem().getItemStack().getType().name().contains("WOOL")) {
                         Skills.addXp(Skills.FARMING, player, 2);
@@ -166,7 +164,7 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        //The block is removed from the list when the block that's added to the list is pushed with a piston so we remove the block from the list and add the block to the list that has a new location modified by the piston
+        //The block is removed from the list when the block that's added to the list is pushed with a piston, so we remove the block from the list and add the block to the list that has a new location modified by the piston
         event.getBlocks()
                 .stream()
                 .filter(placedBlocks::contains)
@@ -180,7 +178,7 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        //The block is removed from the list when the block that's added is pushed with a piston so we remove the block from the list and add the block to the list that has a new location modified by the piston
+        //The block is removed from the list when the block that's added is pushed with a piston, so we remove the block from the list and add the block to the list that has a new location modified by the piston
         event.getBlocks()
                 .stream()
                 .filter(placedBlocks::contains)
@@ -223,14 +221,10 @@ public class Events implements Listener {
             for(Player player : Bukkit.getServer().getOnlinePlayers()){
                 for(ItemStack itemStack : player.getInventory().getContents()){
                     if(ItemStackUtils.isNotAirNorNull(itemStack) && itemStack.hasItemMeta())
-                        if(itemStack.getItemMeta().getPersistentDataContainer().has(SunderiaSkyblock.getKey("wasPlaced"), PersistentDataType.STRING))
+                        if(itemStack.getItemMeta().getPersistentDataContainer().has(SunderiaUtils.key("wasPlaced"), PersistentDataType.STRING))
                             System.out.println(itemStack);
                 }
             }
         }
-    }
-
-    private String locToStr(Location location) {
-        return "x: " + location.getBlockX() + " y: " + location.getBlockY() + " z: " + location.getBlockZ();
     }
 }

@@ -9,7 +9,7 @@ import org.bukkit.event.block.BlockFormEvent;
 public class WorldListener implements Listener {
 
     @EventHandler
-    public void onCobbleStone(BlockFormEvent event) {
+    public void onCobblestoneForm(BlockFormEvent event) {
         if (event.getNewState().getType() != Material.COBBLESTONE) return;
         int random = SunderiaUtils.getRandom().nextInt(100);
         if (random < 50) {
