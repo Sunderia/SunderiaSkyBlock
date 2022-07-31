@@ -1,8 +1,8 @@
-package net.sunderia.skyblock.commands;
+package net.noalegeek.noaplugin.commands;
 
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
-import net.sunderia.skyblock.SunderiaSkyblock;
+import net.noalegeek.noaplugin.NoaPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,13 +24,13 @@ public class VisibleHoloCommand extends PluginCommand {
     public void onCommand(@NotNull Player player, @NotNull String[] args) {
         getArg(args, 0).ifPresentOrElse(arg -> {
             if (!arg.equalsIgnoreCase("true") && !arg.equalsIgnoreCase("false")) {
-                player.sendMessage(SunderiaSkyblock.header + ChatColor.RED + getInfo().usage());
+                player.sendMessage(NoaPlugin.header + ChatColor.RED + getInfo().usage());
                 return;
             }
-            SunderiaSkyblock.getInstance().getConfig().set("visibleholo." + player.getUniqueId(), Boolean.parseBoolean(arg));
-            SunderiaSkyblock.getInstance().saveConfig();
-            player.sendMessage(SunderiaSkyblock.header + "The visibleholo config has successfully been set to " + (Boolean.parseBoolean(arg) ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
-        }, () -> player.sendMessage(SunderiaSkyblock.header + ChatColor.RED + getInfo().usage()));
+            NoaPlugin.getInstance().getConfig().set("visibleholo." + player.getUniqueId(), Boolean.parseBoolean(arg));
+            NoaPlugin.getInstance().saveConfig();
+            player.sendMessage(NoaPlugin.header + "The visibleholo config has successfully been set to " + (Boolean.parseBoolean(arg) ? ChatColor.GREEN + "true" : ChatColor.RED + "false"));
+        }, () -> player.sendMessage(NoaPlugin.header + ChatColor.RED + getInfo().usage()));
     }
 
 }

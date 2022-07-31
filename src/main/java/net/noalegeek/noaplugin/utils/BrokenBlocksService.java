@@ -1,6 +1,6 @@
-package net.sunderia.skyblock.utils;
+package net.noalegeek.noaplugin.utils;
 
-import net.sunderia.skyblock.objects.BrokenBlock;
+import net.noalegeek.noaplugin.objects.BrokenBlock;
 import org.bukkit.Location;
 
 import java.util.HashMap;

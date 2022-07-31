@@ -1,8 +1,8 @@
-package net.sunderia.skyblock.objects;
+package net.noalegeek.noaplugin.objects;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.sunderia.skyblock.SunderiaSkyblock;
+import net.noalegeek.noaplugin.NoaPlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -51,39 +51,39 @@ public enum Skills {
 
     public static void addXp(Skills skill, Player player, double xpAdded) {
         //Add xpAdded for the player's skill
-        SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp", SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp") + xpAdded);
+        NoaPlugin.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp", NoaPlugin.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp") + xpAdded);
         //Verify if the actual xp exceeds the required level for the next level, if true the player get to the next level for the specified skill and receives rewards for the level
-        while (SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp") >= skill.getXpNeededEachLevel().get(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))){
+        while (NoaPlugin.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp") >= skill.getXpNeededEachLevel().get(NoaPlugin.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))){
             //Increase the player's skill level
-            SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level", SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") + 1);
+            NoaPlugin.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level", NoaPlugin.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") + 1);
             //Remove the amount of xp needed for the next level from the player's actual xp
-            SunderiaSkyblock.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp", SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp") - skill.getXpNeededEachLevel().get(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") - 1));
+            NoaPlugin.getInstance().getConfig().set(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp", NoaPlugin.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".actualXp") - skill.getXpNeededEachLevel().get(NoaPlugin.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") - 1));
             //Play a sound for the player
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             //Send a level up message for the player
             player.sendMessage(ChatColor.DARK_AQUA + "================================================================\n" +
-                    ChatColor.AQUA + ChatColor.BOLD + "SKILL LEVEL UP " + ChatColor.RESET + ChatColor.DARK_AQUA + StringUtils.capitalize(skill.name().toLowerCase()) + " " + (SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") == 1 ? ChatColor.DARK_AQUA + fr.sunderia.sunderiautils.utils.StringUtils.integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level")) : ChatColor.DARK_GRAY + fr.sunderia.sunderiautils.utils.StringUtils.integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") - 1) + " -> " + ChatColor.DARK_AQUA + fr.sunderia.sunderiautils.utils.StringUtils.integerToRoman(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))) + "\n" +
+                    ChatColor.AQUA + ChatColor.BOLD + "SKILL LEVEL UP " + ChatColor.RESET + ChatColor.DARK_AQUA + StringUtils.capitalize(skill.name().toLowerCase()) + " " + (NoaPlugin.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") == 1 ? ChatColor.DARK_AQUA + fr.sunderia.sunderiautils.utils.StringUtils.integerToRoman(NoaPlugin.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level")) : ChatColor.DARK_GRAY + fr.sunderia.sunderiautils.utils.StringUtils.integerToRoman(NoaPlugin.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level") - 1) + " -> " + ChatColor.DARK_AQUA + fr.sunderia.sunderiautils.utils.StringUtils.integerToRoman(NoaPlugin.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." + skill.name().toLowerCase(Locale.ROOT) + ".level"))) + "\n" +
                     ChatColor.GREEN + ChatColor.BOLD + "REWARDS\n" +
                     ChatColor.RESET + ChatColor.WHITE + " Lmao you don't have rewards for this level noob\n" +
                     ChatColor.DARK_AQUA + "================================================================"
             );
             //Save config
-            SunderiaSkyblock.getInstance().saveConfig();
+            NoaPlugin.getInstance().saveConfig();
         }
         //Send a message in the player's actionbar with the xp gained, the actual xp for woodcutting skill and xp needed to level up
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GOLD + "+" + (String.valueOf(xpAdded).endsWith(".0") ? String.valueOf(xpAdded).substring(0, String.valueOf(xpAdded).length() - 2) : xpAdded) + " " +
                 StringUtils.capitalize(skill.name().toLowerCase()) + " (" +
-                (String.valueOf(SunderiaSkyblock.getInstance()
+                (String.valueOf(NoaPlugin.getInstance()
                         .getConfig()
                         .getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp")).endsWith(".0") ?
-                        String.valueOf(SunderiaSkyblock.getInstance()
+                        String.valueOf(NoaPlugin.getInstance()
                                         .getConfig()
                                         .getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp"))
-                                .substring(0, String.valueOf(SunderiaSkyblock.getInstance()
+                                .substring(0, String.valueOf(NoaPlugin.getInstance()
                                         .getConfig()
                                         .getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp")).length() - 2) :
-                        SunderiaSkyblock.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp")) +
-                "/" + Skills.WOODCUTTING.getXpNeededEachLevel().get(SunderiaSkyblock.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." +
+                        NoaPlugin.getInstance().getConfig().getDouble(player.getUniqueId() + ".skills." + skill.name().toLowerCase() + ".actualXp")) +
+                "/" + Skills.WOODCUTTING.getXpNeededEachLevel().get(NoaPlugin.getInstance().getConfig().getInt(player.getUniqueId() + ".skills." +
                 skill.name().toLowerCase() + ".level")) + ")"));
         //Play a sound for the player
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);

@@ -1,4 +1,4 @@
-package net.sunderia.skyblock.objects;
+package net.noalegeek.noaplugin.objects;
 
 import fr.sunderia.sunderiautils.utils.Cooldown;
 import fr.sunderia.sunderiautils.utils.ItemBuilder;

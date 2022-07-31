@@ -1,4 +1,4 @@
-package net.sunderia.skyblock.utils;
+package net.noalegeek.noaplugin.utils;
 
 public class StructureBuilder {
 

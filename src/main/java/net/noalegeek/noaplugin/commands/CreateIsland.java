@@ -1,9 +1,9 @@
-package net.sunderia.skyblock.commands;
+package net.noalegeek.noaplugin.commands;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
-import net.sunderia.skyblock.objects.Structures;
+import net.noalegeek.noaplugin.objects.Structures;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.structure.Mirror;

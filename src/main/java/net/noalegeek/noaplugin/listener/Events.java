@@ -1,11 +1,11 @@
-package net.sunderia.skyblock.listener;
+package net.noalegeek.noaplugin.listener;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
 import fr.sunderia.sunderiautils.utils.ItemStackUtils;
-import net.sunderia.skyblock.objects.Inventories;
-import net.sunderia.skyblock.objects.Items;
-import net.sunderia.skyblock.objects.Skills;
-import net.sunderia.skyblock.utils.BrokenBlocksService;
+import net.noalegeek.noaplugin.objects.Inventories;
+import net.noalegeek.noaplugin.objects.Items;
+import net.noalegeek.noaplugin.objects.Skills;
+import net.noalegeek.noaplugin.utils.BrokenBlocksService;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

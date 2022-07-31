@@ -1,4 +1,4 @@
-package net.sunderia.skyblock.objects;
+package net.noalegeek.noaplugin.objects;
 
 import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
 import org.bukkit.Bukkit;

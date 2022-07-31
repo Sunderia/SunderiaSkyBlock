@@ -1,4 +1,4 @@
-package net.sunderia.skyblock.utils;
+package net.noalegeek.noaplugin.utils;
 
 import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import org.bukkit.Material;

@@ -1,11 +1,11 @@
-package net.sunderia.skyblock.commands;
+package net.noalegeek.noaplugin.commands;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
 import fr.sunderia.sunderiautils.commands.CommandInfo;
 import fr.sunderia.sunderiautils.commands.PluginCommand;
 import fr.sunderia.sunderiautils.customblock.CustomBlock;
 import fr.sunderia.sunderiautils.utils.ItemBuilder;
-import net.sunderia.skyblock.objects.Inventories;
+import net.noalegeek.noaplugin.objects.Inventories;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

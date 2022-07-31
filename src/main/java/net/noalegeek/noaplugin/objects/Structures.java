@@ -1,6 +1,6 @@
-package net.sunderia.skyblock.objects;
+package net.noalegeek.noaplugin.objects;
 
-import net.sunderia.skyblock.SunderiaSkyblock;
+import net.noalegeek.noaplugin.NoaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.structure.Structure;
 
@@ -24,7 +24,7 @@ public enum Structures {
 
     private static Structure loadStructure(String path) {
         try {
-            return Bukkit.getStructureManager().loadStructure(Objects.requireNonNull(SunderiaSkyblock.getInstance().getResource(path)));
+            return Bukkit.getStructureManager().loadStructure(Objects.requireNonNull(NoaPlugin.getInstance().getResource(path)));
         } catch (IOException e) {
             e.printStackTrace();
             return null;

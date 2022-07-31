@@ -1,10 +1,10 @@
-package net.sunderia.skyblock.objects;
+package net.noalegeek.noaplugin.objects;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
 import fr.sunderia.sunderiautils.utils.InventoryBuilder;
 import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import fr.sunderia.sunderiautils.utils.ItemStackUtils;
-import net.sunderia.skyblock.utils.InventoryUtils;
+import net.noalegeek.noaplugin.utils.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

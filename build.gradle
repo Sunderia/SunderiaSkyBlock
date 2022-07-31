@@ -8,7 +8,7 @@ plugins {
 //apply from: rootProject.file('buildtools.gradle')
 apply from: rootProject.file('specialSource.gradle')
 
-group 'fr.sunderia'
+group 'net.noalegeek'
 version '1.0-SNAPSHOT'
 
 tasks.prepareSpigotPlugins.dependsOn shadowJar
@@ -54,7 +54,7 @@ dependencies {
 }
 
 spigot {
-    name = 'SunderiaSkyblock'
+    name = 'NoaPlugin'
     version = mcVersion
     depends('ProtocolLib')
     permissions {

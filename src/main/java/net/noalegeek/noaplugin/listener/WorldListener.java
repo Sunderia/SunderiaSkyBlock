@@ -1,4 +1,4 @@
-package net.sunderia.skyblock.listener;
+package net.noalegeek.noaplugin.listener;
 
 import fr.sunderia.sunderiautils.SunderiaUtils;
 import org.bukkit.Material;
